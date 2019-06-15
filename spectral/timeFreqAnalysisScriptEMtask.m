@@ -1,15 +1,8 @@
+function timeFreqAnalysisScriptEMtask( pId, expMode, savePath, rdsPath )
 %%
-addpath('~/prj/Bham/code/mcode/utils/');
-addpath('~/tbx/CircStat2012a/');
-addpath(genpath('/home/rouxf/tbx/eeglab14_1_1b/functions/sigprocfunc/'));
 addpath(genpath('~/tbx/chronux_2_11/spectral_analysis/'));
 addpath('~/tbx/fieldtrip-20170618/');
 ft_defaults;
-
-%%
-pId = {'P07'};%{'P02','P04','P05','P07','P08','P09','P03ERL','P22AMS','P23AMS'};%
-expMode = {'fVSpEM','cnEM'};
-savePath = '~/resultsSpikeFieldOct18II/';
 
 %% start parallel ppol
 if isempty(gcp('nocreate'))
@@ -45,7 +38,7 @@ cfgtf.output              = 'fourier';
 for curPat = 1:length(pId) % loop over patients
     for curExp = 1:length(expMode) % loop over exp-modes (either fVSpEM or cnEM)
         
-        [ tmp ] = dir(['/media/rouxf/rds-share/iEEG_DATA/MICRO/',pId{curPat},'/',expMode{curExp},'/']);% check for existing data
+        [ tmp ] = dir([rdsPath,pId{curPat},'/',expMode{curExp},'/']);% check for existing data
         
         if ~isempty(tmp) % get the timestamp labels for each session
             
@@ -55,7 +48,7 @@ for curPat = 1:length(pId) % loop over patients
             %%
             for curSesh = 1:length(sesh) % loop over the recording-sesssions
                 
-                [ p2d ] = ['/media/rouxf/rds-share/iEEG_DATA/MICRO/',pId{curPat},'/',expMode{curExp},'/',sesh{curSesh},'/']; %path for preproc data
+                [ p2d ] = [rdsPath,pId{curPat},'/',expMode{curExp},'/',sesh{curSesh},'/']; %path for preproc data
                 [ fN ] = dir([p2d,pId{curPat},'_',expMode{curExp},'_',sesh{curSesh},'_lfpDataStimLockedSegmenteddownsampled.mat']);% filename of preproc data
                 
                 [ lfpDat ] = load([p2d,fN.name])% load data
@@ -102,7 +95,6 @@ for curPat = 1:length(pId) % loop over patients
                     [ itc ]     = cell(1,length( selIx ));% inter-trial coh
                     [ itcH ]     = cell(1,length( selIx ));% inter-trial coh
                     [ itcM ]     = cell(1,length( selIx ));% inter-trial coh
-                    %[ phi ]      = cell(1,length( selIx ));% single trial phase
                     
                     %%
                     parfor curChan = 1:length( lfp )
@@ -115,19 +107,6 @@ for curPat = 1:length(pId) % loop over patients
                         fprintf('\n');
                     end;
                     [~,tx,fx] = mtspecgramc(ones(size(lfp{1},1),1),movingwinLF, paramsLF);
-                    
-                    %%
-%                     errClf = cell(1,length(SxxLF));
-%                     errCrandlf = cell(1,length(SxxLF));
-%                     for curChan = 1:length(SxxLF)
-%                         fprintf([num2str(curChan),'/',num2str(length(SxxLF))]);
-%                         fprintf('\n');
-%                         
-%                         A = squeeze(mean(SxxLF{curChan}(tx-7>=0.25 & tx-7<=1.8,1:4:end,:),1));
-%                         B = squeeze(mean(SxxLF{curChan}(tx-7>=2.25 & tx-7<=3.8,1:4:end,:),1));
-%                         
-%                         [errClf{curChan},errCrandlf{curChan}] = decodingAvsB([A';B']',[zeros(size(A,2),1);ones(size(B,2),1)],100);                        
-%                     end;
                     
                     %% split single trial power data into hits and misses and save data to disc separately
                     % low freq hits
@@ -284,7 +263,7 @@ for curPat = 1:length(pId) % loop over patients
                             end;
                             
                             nT = length(phi.time);
-                            shf = [250 750 1500];
+                            shf = [250 500 750 1000 1250 1500 1750 2500 2750 3000];
                             ItcR = zeros(200,1);%size(tmp,2),size(tmp,3)
                             for curPer = 1:200
                                 fprintf([num2str(curPer),'/',num2str(200)]);

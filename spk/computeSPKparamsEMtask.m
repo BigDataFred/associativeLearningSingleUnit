@@ -1,18 +1,9 @@
-%%
-addpath('~/associativeLearningSingleUnit/');
-
-%%
-pId = {'P02','P04','P05','P07','P08','P09','P03ERL','P22AMS','P23AMS'};%
-expMode = {'fVSpEM','cnEM'};
-savePath = '~/resultsSpikeFieldOct18II/';
+function computeSPKparamsEMtask( pId, expMode, spkMode, savePath, rdsPath  )
 
 %% start parallel ppol
 if isempty(gcp('nocreate'))
     parpool(36,'SpmdEnabled', false);
 end;
-
-%%
-[ spkMode ] = {'Sorting','noSorting'};% can be either noSorting or Sorting
 
 %%
 [ dt2 ] = -300:300;
@@ -22,21 +13,11 @@ for curMode = 1:length(spkMode)
     for curPat = 1:length(pId) % loop over patients
         for curExp = 1:length(expMode) % loop over exp-modes (either fVSpEM or cnEM)
             
-            [ tmp ] = dir(['/media/rouxf/rds-share/iEEG_DATA/MICRO/',pId{curPat},'/',expMode{curExp},'/']);% check for existing data
+            [ tmp ] = dir([rdsPath,pId{curPat},'/',expMode{curExp},'/']);% check for existing data
             
             if ~isempty(tmp) % get the timestamp labels for each session
                 
-                cnt = 0;
-                sesh = cell(1,length(tmp));
-                for curSesh = 1:length(sesh)
-                    if ~isempty(regexp(tmp(curSesh).name,'\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}'))
-                        cnt = cnt+1;
-                        ix = regexp(tmp(curSesh).name,'\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}');
-                        ix2 = ix+18;
-                        sesh(cnt) = {tmp(curSesh).name(ix:ix2)};
-                    end;
-                end;
-                sesh(cnt+1:end) = [];
+                [sesh] = extractSeshLabels(tmp);clear tmp;
                 
                 %%
                 pId{curPat}
@@ -47,7 +28,7 @@ for curMode = 1:length(spkMode)
                 for curSesh = 1:length(sesh) % loop over the recording-sesssions
                     
                     %% get the spk data corresponding to the current session
-                    [ p2d ] = ['/media/rouxf/rds-share/iEEG_DATA/MICRO/',pId{curPat},'/',expMode{curExp},'/',sesh{curSesh},'/']; %path for preproc data
+                    [ p2d ] = [rdsPath,pId{curPat},'/',expMode{curExp},'/',sesh{curSesh},'/']; %path for preproc data
                     
                     [ fN ]     = dir([p2d,pId{curPat},'_',expMode{curExp},'_',sesh{curSesh},'_lfpDataStimLockedSegmenteddownsampled.mat']);% filename of preproc data
                     [ lfpDat ] = load([p2d,fN.name])% load data
