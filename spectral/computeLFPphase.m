@@ -22,20 +22,22 @@ for curChan = 1:length( lfp )
     dum                     = [];
     dum.fsample             = Fs;
     dum.label               = {'dumChan1'};
-    dum.trial               = cell(1,size(lfp,2));
-    dum.time                = cell(1,size(lfp,2));
-    for curTrl = 1:size(lfp,2)
-        dum.trial{curTrl}            = gradient( lfp(:,curTrl)' );
+    dum.trial               = cell(1,size(lfp{curChan},2));
+    dum.time                = cell(1,size(lfp{curChan},2));
+    for curTrl = 1:size(lfp{curChan},2)
+        dum.trial{curTrl}            = gradient( lfp{curChan}(:,curTrl)' );
         dum.time{curTrl}             = toi(1):1/Fs:toi(2);
     end;
-    [phi{curChan}] = ft_freqanalysis( cfgtf2, dum );
+    [ tmp ] = ft_freqanalysis( cfgtf2, dum );
+    
+    [phi{curChan}] = tmp.fourierspctrm;
 end;
 
 %%
 for curChan = 1:length(phi)
     if ~isempty(phi{curChan})
-        phiTime = phi{curChan}.time;
-        phiFreq = phi{curChan}.freq;
+        phiTime = tmp.time;
+        phiFreq = tmp.freq;
         break;
     end;
 end;
