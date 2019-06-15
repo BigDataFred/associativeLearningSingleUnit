@@ -49,17 +49,7 @@ for curPat = 1:length(pId) % loop over patients
         
         if ~isempty(tmp) % get the timestamp labels for each session
             
-            cnt = 0;
-            sesh = cell(1,length(tmp));
-            for curSesh = 1:length(sesh)
-                if ~isempty(regexp(tmp(curSesh).name,'\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}'))
-                    cnt = cnt+1;
-                    ix = regexp(tmp(curSesh).name,'\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}');
-                    ix2 = ix+18;
-                    sesh(cnt) = {tmp(curSesh).name(ix:ix2)};
-                end;
-            end;
-            sesh(cnt+1:end) = []
+            [sesh] = extractSeshLabels(tmp);
             clear tmp;
             
             %%
@@ -71,100 +61,17 @@ for curPat = 1:length(pId) % loop over patients
                 [ lfpDat ] = load([p2d,fN.name])% load data
                       
                 %%
-                [ trlPool ] = sort([lfpDat.hitIdx;lfpDat.missIdx]);
-                [ hitIdx ]  = lfpDat.hitIdx;
-                [ missIdx ] = lfpDat.missIdx;
-                [ trlENC ]  = 1:length(lfpDat.trlENC);
-                
-                if ~all(trlENC' == trlPool) || (length(trlPool) == length(trlENC))~=1 || ~all(hitIdx == trlPool(ismember(trlPool,hitIdx))) || ~all(sort(missIdx) == trlPool(ismember(trlPool,missIdx)))
-                    error('error wrong trial assignment');
-                end;
+                [trlPool,hitIdx,missIdx,trlENC] = organizeTrlIdxEM(lfpDat);
                 
                 %%
                 paramsLF.Fs               = lfpDat.dsFs;
                 paramsHF.Fs               = lfpDat.dsFs;
                 cfgtf.toi                 = lfpDat.dsTrlTime(1):1/lfpDat.dsFs:lfpDat.dsTrlTime(length(lfpDat.dsTrlTime));
                 
-                %% extract the labels of Behnke-Fried electrodes
-                BFlab = cell(length(lfpDat.chanLab),1);
-                for curChan = 1:length( lfpDat.chanLab )% loop over microwires
-                    tmp = lfpDat.chanLab{curChan};
-                    ix = regexp(tmp,'\d{1}');
-                    BFlab(curChan) = {tmp(1:ix-1)};% only keep the BF label, ignore MW index
-                end;
-                BFid = unique(BFlab);% extract unique labels
-                
-                BFix = cell(length(BFid),1);
-                for curBF = 1:length(BFid)                   
-                    BFix{curBF} = find(strcmp(BFid{curBF},BFlab));% map micro-wires to BF-label (ie extract indexes)
-                end;                                               
-                
-                %% calculate root mean square energy for micro-wires
-                for curBF = 1:length(BFid)
-                    rms = zeros(length(BFix{curBF}),1);
-                    for curMW = 1:length(BFix{curBF})
-                        rms(curMW) = mean(sqrt(mean(lfpDat.LFPseg{BFix{curBF}(curMW)}(lfpDat.dsTrlTime>=-0.5 & lfpDat.dsTrlTime <=5,:).^2,1)));
-                    end;
-                    rms = (rms-mean(rms))./std(rms);
-                    %delete Micro-wires with RMS above threshold
-                    lfpDat.LFPseg(BFix{curBF}(abs(rms)>3)) = []; 
-                    lfpDat.chanLab(BFix{curBF}(abs(rms)>3)) = [];
-                end;                
-                clear BF*;
-                
                 %%
-                [ lfp ]   = cell(1,length( lfpDat.LFPseg));% lfp data      
-                [ erp ]   = cell(1,length( lfpDat.LFPseg));% erp data  
-                [ delIx ] = cell(1,length( lfpDat.LFPseg));% indexes with delete lfp trials (important for spk data!)
-                [ n ]     = zeros(1,length( lfpDat.LFPseg));
+                [trlPool,hitIdx,missIdx,trlENC] = organizeTrlIdxEM(lfpDat);
                 
-                %% pre-allocate and initialize
-                parfor curChan = 1:length( lfpDat.LFPseg )
-
-                    [ tmpLFP ] = lfpDat.LFPseg{curChan}(:,ismember(lfpDat.trlSel,lfpDat.trlENC)); % extract trials corresponding to encoding                  
-                    
-                    % compute RMS of LFP over time
-                    rms = sqrt(mean(tmpLFP(lfpDat.dsTrlTime>=-0.5 & lfpDat.dsTrlTime <=5,:).^2,1));
-                    rms = ( rms-mean(rms) )./std(rms);% standardize RMS
-                    
-                    % compute z-score of LFP
-                    m  = ones(size(tmpLFP,1),1)*mean(tmpLFP,1);
-                    sd = ones(size(tmpLFP,1),1)*std(tmpLFP,0,1);
-                    z = ( tmpLFP-m )./ sd;
-                    z = max(abs(z(lfpDat.dsTrlTime>=-0.5&lfpDat.dsTrlTime <=5,:)),[],1);
-                    
-                    delIx{curChan} = unique([find(abs(rms) >= 4) find(z >= 4)]);% keep indexes of trials where LFP-activity is out of range (outliers)
-                    
-                    tmpLFP(:,delIx{curChan}) = []; %delete trials where LFP-activity is out of range (outliers)
-                    
-                    % LFP-data must have at least 25 trials in total (hits + misses) per session to perform spectral analysis
-                    tmp = trlPool;
-                    tmp(delIx{curChan}) = [];
-                    n(curChan) = length(find(ismember(tmp,hitIdx)));
-                    if (~isempty( tmpLFP) ) && (n(curChan)>25) 
-                        
-                        m  = ones(size(tmpLFP,1),1)*mean(tmpLFP,1); % mean of LFP
-                        sd = ones(size(tmpLFP,1),1)*std(tmpLFP,0,1); % SD of LFP
-                        
-                        lfp{curChan} = (tmpLFP-m);%./sd;% mean-centered single trial lfp data
-                        erp{curChan} = lfp{curChan}; % evoked poential
-                    end;
-                end;
-                clear LFPseg;
-                
-                %%
-                selIx = [];
-                for curChan = 1:length( lfp )
-                    if ~isempty(lfp{curChan})
-                        selIx = [selIx;curChan];
-                    end;
-                end;
-                chanLabLFP = lfpDat.chanLab(selIx);
-                
-                lfp = lfp(selIx);
-                erp = erp(selIx);
-                delIx = delIx(selIx);
-                n     = n(selIx);
+                [lfp,erp,delIx,selIx,n,chanLabLFP] = preprocLFP( lfpDat, trlPool, hitIdx );
                 
                 %%
                 if ( ~isempty(lfp) && ~isempty(erp) && ~isempty(selIx) )
@@ -278,19 +185,7 @@ for curPat = 1:length(pId) % loop over patients
                         end;
                         fprintf('\n');
                     end;
-                    [~,tx,fx] = mtspecgramc(ones(size(lfp{1},1),1),movingwinHF, paramsHF);
-                    
-                    %%
-%                     errChf = cell(1,length(SxxHF));
-%                     errCrandhf = cell(1,length(SxxHF));
-%                     for curChan = 1:length(SxxHF)
-%                         fprintf([num2str(curChan),'/',num2str(length(SxxHF))])
-%                         A = squeeze(mean(SxxHF{curChan}(tx-7>=0 & tx-7<2,1:18:end,:),1));
-%                         B = squeeze(mean(SxxHF{curChan}(tx-7>=2 & tx-7<4,1:18:end,:),1));
-%                         
-%                         [errChf{curChan},errCrandhf{curChan}] = decodingAvsB([A';B']',[zeros(size(A,2),1);ones(size(B,2),1)],500);
-%                         fprintf('\n');
-%                     end;
+                    [~,tx,fx] = mtspecgramc(ones(size(lfp{1},1),1),movingwinHF, paramsHF);              
                     
                     %% split single trial power data into hits and misses and save data to disc separately
                     % high freq hits
