@@ -1,10 +1,5 @@
 %%
-addpath('~/prj/Bham/code/mcode/utils/');
-addpath('~/tbx/CircStat2012a/');
-addpath(genpath('/home/rouxf/tbx/eeglab14_1_1b/functions/sigprocfunc/'));
-addpath(genpath('~/tbx/chronux_2_11/spectral_analysis/'));
-addpath('~/tbx/fieldtrip-20170618/');
-ft_defaults;
+addpath('~/associativeLearningSingleUnit/');
 
 %%
 pId = {'P02','P04','P05','P07','P08','P09','P03ERL','P22AMS','P23AMS'};%
