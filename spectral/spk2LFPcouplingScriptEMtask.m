@@ -133,7 +133,7 @@ for curPat = 1:length(pId)
                             [ chanLabSPK ] = chanLabSPK(sigIxSPK);
                             
                             %%
-                            saveName =[pId{curPat},'_',expMode{curExp},'_',sesh{curSesh},'_spk2LFPCouplingII_',spk2LFPmode{curSpk2LFPmode},'_',spkMode{curSpkSortingMode},'_lowFreq.mat'];
+                            saveName =[ pId{curPat},'_',expMode{curExp},'_',sesh{curSesh},'_spk2LFPCoupling_',spk2LFPmode{curSpk2LFPmode},'_',spkMode{curSpkSortingMode},'_alpha',num2str(alpha),'_nRand',num2str(nRand),'_lowFreq.mat' ];
                             save([savePath,saveName],'spk2LFPfreqAx','spk2LFPCoupling','chanLabLFP','chanLabSPK','sigIxLFP','sigIxSPK','-v7.3');
                             clear spk2LFPfreqAx spk2LFPCoupling chanLabLFP chanLabSPK sigIxLFP sigIxSPK;
                             
