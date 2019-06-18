@@ -115,12 +115,13 @@ for curPat = 1:length(pId)
                             for curMW = 1:length(sigIxLFP)
                                 fprintf([num2str(curMW),'/',num2str(length(sigIxLFP))]);
                                 if ~isempty(phi{sigIxLFP(curMW)})
-                                    [ tmp ] = squeeze(phi{curMW}(:,:,fIx,tIx));
+                                    [ tmp ] = squeeze(phi{sigIxLFP(curMW)}(:,:,fIx,tIx));
                                     
                                     curMW2 = curMW;
                                     ts = spkTs{sigIxSPK(curMW2)}(tIx,:);
                                     ts(:,delIx{sigIxLFP(curMW)}) = [];
                                     ix = find(ts==1);
+                                    ts = [];
                                     
                                     [spk2LFPCoupling(curMW,:)] = computeSPK2LFPcoupling( tmp, ix, spk2LFPmode{curSpk2LFPmode} );
                                 end;
