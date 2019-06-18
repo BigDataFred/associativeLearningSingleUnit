@@ -101,7 +101,7 @@ for curPat = 1:length(pId)
                             for curMW = 1:length(phi)
                                 if ~isempty(phi{curMW})
                                     tIx = find( phiTime >=-.5 & phiTime < 5 );
-                                    fIx = find( phiFreq >=4 & phiFreq <=20 );
+                                    fIx = find( phiFreq >=0.5 & phiFreq <=30 );
                                     spk2LFPfreqAx = phiFreq;
                                     break;
                                 end;
@@ -122,7 +122,7 @@ for curPat = 1:length(pId)
                                     ts(:,delIx{sigIxLFP(curMW)}) = [];
                                     ix = find(ts==1);
                                     
-                                    [spk2LFPCoupling(curMW,:)] = computeSPK2LFPcoupling( phi, spkIx, fIx, spk2LFPmode{curSpk2LFPmode} );
+                                    [spk2LFPCoupling(curMW,:)] = computeSPK2LFPcoupling( tmp, ix, fIx, spk2LFPmode{curSpk2LFPmode} );
                                 end;
                                 fprintf('\n');
                             end;
