@@ -1,6 +1,6 @@
-function [spk2LFPCoupling] = computeSPK2LFPcoupling( phi, spkIx, fIx, spk2LFPmode)
+function [spk2LFPCoupling] = computeSPK2LFPcoupling( phi, spkIx, spk2LFPmode)
 
-[ spk2LFPCoupling ] = NaN(length(fIx),1);
+[ spk2LFPCoupling ] = NaN(size( phi,2 ),1);
 
 switch spk2LFPmode
     case 'plv'
@@ -23,8 +23,7 @@ switch spk2LFPmode
             end;
         end;
         
-        [ ppc ] = NaN( 1,length(fIx) );
-        parfor curFreq = 1:length( fIx )
+        parfor curFreq =  1:size( phi,2 )
             ph = squeeze(phi(:,curFreq,:))';
             ph = ph(:);
             ph = ph(spkIx);

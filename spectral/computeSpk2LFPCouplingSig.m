@@ -21,10 +21,10 @@ for curMW = 1:length(phi)
             ix = find(ts==1);
             ts = [];
             
-            [tmp2] = computeSPK2LFPcoupling( tmp, ix, fIx, spk2LFPmode );
+            [tmp2] = computeSPK2LFPcoupling( tmp, ix, spk2LFPmode );
             mX(curMW2) = max( tmp2 );
             
-            [tmp2] = shuffleSpk2LFPCoupling( tmp, ix,  phiTrl, fIx, nRand, spk2LFPmode );
+            [tmp2] = shuffleSpk2LFPCoupling( tmp, ix,  phiTrl, nRand, spk2LFPmode );
             [mxRnd(curMW2,:)] = max( tmp2,[],1 );
         end;
         [spk2lfp(curMW,:)] = mX;            mX      = [];

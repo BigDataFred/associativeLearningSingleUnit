@@ -101,7 +101,7 @@ for curPat = 1:length(pId)
                             for curMW = 1:length(phi)
                                 if ~isempty(phi{curMW})
                                     tIx = find( phiTime >=-.5 & phiTime < 5 );
-                                    fIx = find( phiFreq >=0.5 & phiFreq <=30 );
+                                    fIx = find( phiFreq >=0 & phiFreq <=30 );
                                     spk2LFPfreqAx = phiFreq;
                                     break;
                                 end;
@@ -115,7 +115,7 @@ for curPat = 1:length(pId)
                             for curMW = 1:length(sigIxLFP)
                                 fprintf([num2str(curMW),'/',num2str(length(sigIxLFP))]);
                                 if ~isempty(phi{sigIxLFP(curMW)})
-                                    [ tmp ] = squeeze(phi{sigIxLFP(curMW)}(:,:,:,tIx));
+                                    [ tmp ] = squeeze(phi{curMW}(:,:,fIx,tIx));
                                     
                                     curMW2 = curMW;
                                     ts = spkTs{sigIxSPK(curMW2)}(tIx,:);
