@@ -1,15 +1,15 @@
-function [spk2LFPRand] = permutationStats4Spk2LFPcoupling( phi, spkIx,  phiTrl, fIx, nRand, spk2LFPmode )
+function [spk2LFPRand] = shuffleSpk2LFPCoupling( phi, spkIx,  phiTrl, nRand, spk2LFPmode )
  
-[ spk2LFPRand ] = NaN( length( fIx), nRand );
+[ spk2LFPRand ] = NaN( size( phi,2), nRand );
 parfor randIter = 1:nRand
     
-    dum = NaN(1,length(fIx));
+    dum = NaN(1,length(size( phi,2)));
     rIx = randperm(phiTrl);
     
     switch spk2LFPmode
         
         case 'plv'
-            for curFreq = 1:length( fIx)
+            for curFreq = 1:size( phi,2)
                 ph = squeeze(phi(:,curFreq,:))';
                 ph = ph(:,rIx);
                 ph = ph(:);
@@ -32,7 +32,7 @@ parfor randIter = 1:nRand
                 end;
             end;
                         
-            for curFreq = 1:length( fIx)
+            for curFreq = 1:size( phi,2)
                 ph = squeeze(phi(:,curFreq,:))';
                 ph = ph(:,rIx);
                 ph = ph(:);

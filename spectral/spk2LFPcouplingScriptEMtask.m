@@ -122,7 +122,7 @@ for curPat = 1:length(pId)
                                     ts(:,delIx{sigIxLFP(curMW)}) = [];
                                     ix = find(ts==1);
                                     
-                                    [spk2LFPCoupling(curMW,:)] = computeSPK2LFPcoupling( tmp, ix, fIx, spk2LFPmode{curSpk2LFPmode} );
+                                    [spk2LFPCoupling(curMW,:)] = computeSPK2LFPcoupling( tmp, ix, spk2LFPmode{curSpk2LFPmode} );
                                 end;
                                 fprintf('\n');
                             end;
