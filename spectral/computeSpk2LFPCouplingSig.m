@@ -1,7 +1,10 @@
-function [sigIxLFP,sigIxSPK] = computeSpk2LFPCouplingSig( phi, spkTs, nRand, fIx, tIx, delIx,  spk2LFPmode, alpha, chanLabLFP, chanLabSP )
+function [sigIxLFP,sigIxSPK] = computeSpk2LFPCouplingSig( phi, spkTs, nRand, fIx, tIx, delIx,  spk2LFPmode, alpha, chanLabLFP, chanLabSPK )
 
 %%
 if length( phi ) ~= length( chanLabLFP )
+    error('data dimensions must match up');
+end;
+if length( delIx ) ~= length( chanLabLFP )
     error('data dimensions must match up');
 end;
 if length( spkTs ) ~= length( chanLabSPK )
@@ -25,7 +28,7 @@ for curMW = 1:length(phi)
         
         for curMW2 = 1:length( spkTs )
             ts = spkTs{curMW2}(tIx,:);
-            ts(:,delIx{strcmp(chanLabSPK(curMW),chanLabLFP)}) = [];
+            ts(:,delIx{curMW}) = [];
             ix = find(ts==1);
             ts = [];
             

@@ -26,7 +26,7 @@ for curPat = 1:length(pId)
                 clear tmp;
                 
                 %%
-                for curSesh = 1%:length(sesh)
+                for curSesh = 1:length(sesh)
                     
                     p2d = [rdsPath,pId{curPat},'/',expMode{curExp},'/',sesh{curSesh},'/'];
                     fN = dir([p2d,pId{curPat},'_',expMode{curExp},'_',sesh{curSesh},'_lfpDataStimLockedSegmenteddownsampled.mat']);
@@ -68,9 +68,8 @@ for curPat = 1:length(pId)
                     %%
                     [ spkSelIx2 ] = [];
                     for curMW = 1:length( spkTs )
-                        x = spkTs{curMW};
+                        x = spkTs{curMW}(lfpDat.dsTrlTime >=-0.5 & lfpDat.dsTrlTime<=5,:);
                         x(:,delIx{strcmp(chanLabSPK(curMW),chanLabLFP)}) = [];
-                        x = x(lfpDat.dsTrlTime >=0 & lfpDat.dsTrlTime<=4,:);
                         if ( sum(x(:)) >= 50 )
                             spkSelIx2 = [spkSelIx2 curMW];
                         end;
