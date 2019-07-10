@@ -3,10 +3,10 @@
 addpath(genpath('~/associativeLearningSingleUnit/'));
 
 %%
-[ pId ] = {'P04'};%{'P02','P04','P05','P07','P08','P09','P03ERL','P22AMS','P23AMS'};%
-[ expMode ] = {'fVSpEM'};%{'fVSpEM','cnEM'};
-[ spkMode ] = {'noSorting'};%{'Sorting','noSorting'};% can be either noSorting or Sorting
-[ spk2LFPmode ] = {'plv'};%{'plv','ppc'};% can be either noSorting or Sorting
+[ pId ] = {'P02','P04','P05','P07','P08','P09','P03ERL','P22AMS','P23AMS'};%
+[ expMode ] = {'fVSpEM','cnEM'};
+[ spkMode ] = {'Sorting','noSorting'};% can be either noSorting or Sorting
+[ spk2LFPmode ] = {'plv','ppc'};% can be either noSorting or Sorting
 
 %%
 [ savePath ] = '~/resultsSpikeFieldJun2019/';
