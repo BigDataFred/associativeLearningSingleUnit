@@ -16,7 +16,7 @@ addpath(genpath('~/associativeLearningSingleUnit/'));
 %computeSPKparamsEMtask( pId, expMode, spkMode, savePath, rdsPath  );
 
 %% compute spectral parameters
-%timeFreqAnalysisScriptEMtask( pId, expMode, savePath, rdsPath );
+timeFreqAnalysisScriptEMtask( pId, expMode, savePath, rdsPath );
 
 %% compute spk 2 lfp coupling
 nRand = 200;
