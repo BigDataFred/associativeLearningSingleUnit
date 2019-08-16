@@ -6,7 +6,7 @@ addpath('~/tbx/fieldtrip-20170618/');
 ft_defaults;
 
 %%
-[ p2SPKd ] = savePath;
+[ p2SPKd ]   = savePath;
 
 %%
 if isempty( gcp('Nocreate') )
@@ -45,7 +45,7 @@ for curPat = 1:length( pId )
                     fN = dir( [ p2SPKd, pId{curPat}, '_', expMode{curExp}, '_', sesh{curSesh}, '_spkParams_', spkMode{curSpkSortingMode},'.mat' ] )
                     [ spkDat ] = load( [ p2SPKd, fN.name ] )
                     
-                    %% must be over 50 spikes, mean spike count > 2 and mean firing rate > 1 
+                    %%
                     [ spkTs ] = spkDat.spkTs;
                     [ chIx ] = 1:length( spkTs );
                     
@@ -78,7 +78,7 @@ for curPat = 1:length( pId )
                     [ spkTs ]      = spkTs(spkSelIx2);
                     [ chanLabSPK ] = chanLabSPK(spkSelIx2);
                     
-                    %% safety checks
+                    %%
                     chck = zeros(1,length(phi));
                     for curChan = 1:length(phi)
                         chck(curChan) = ~isempty(phi{curChan});
@@ -104,18 +104,18 @@ for curPat = 1:length( pId )
                             end;
                         end;
                         
-                        for curSpk2LFPmode = 1:length( spk2LFPmode )
+                        for curSpk2LFPmode = 1:length(spk2LFPmode)
                             %%
                             sigIxLFP = []; sigIxSPK = [];
-                            [ sigIxLFP, sigIxSPK ] = computeSpk2LFPCouplingSig( phi, spkTs, nRand, fIx, tIx, delIx,  spk2LFPmode{curSpk2LFPmode}, alpha, chanLabLFP, chanLabSPK );
+                            [sigIxLFP,sigIxSPK] = computeSpk2LFPCouplingSig( phi, spkTs, nRand, fIx, tIx, delIx,  spk2LFPmode{curSpk2LFPmode}, alpha, chanLabLFP, chanLabSPK );
                             
                             %%
-                            [ spk2LFPCoupling ] = NaN( length( sigIxLFP ), length( fIx ) );
-                            if ~isempty( sigIxLFP ) && ~isempty( sigIxSPK )
-                                parfor curMW = 1:length( sigIxLFP )
-                                    fprintf( [ num2str(curMW), '/', num2str(length(sigIxLFP)) ] );
-                                    if ~isempty( phi{sigIxLFP(curMW)} )
-                                        [ tmp ] = squeeze( phi{sigIxLFP(curMW)}(:,:,fIx,tIx) );
+                            [ spk2LFPCoupling ] = NaN( length(sigIxLFP), length( fIx) );
+                            if ~isempty(sigIxLFP) && ~isempty(sigIxSPK)
+                                for curMW = 1:length(sigIxLFP)
+                                    fprintf([num2str(curMW),'/',num2str(length(sigIxLFP))]);
+                                    if ~isempty(phi{sigIxLFP(curMW)})
+                                        [ tmp ] = squeeze(phi{sigIxLFP(curMW)}(:,:,fIx,tIx));
                                         
                                         curMW2 = curMW;
                                         ts = spkTs{sigIxSPK(curMW2)}(tIx,:);
@@ -123,16 +123,15 @@ for curPat = 1:length( pId )
                                         ix = find(ts==1);
                                         ts = [];
                                         
-                                        [ spk2LFPCoupling(curMW,:) ] = computeSPK2LFPcoupling( tmp, ix, spk2LFPmode{curSpk2LFPmode} );
+                                        [spk2LFPCoupling(curMW,:)] = computeSPK2LFPcoupling( tmp, ix, spk2LFPmode{curSpk2LFPmode} );
                                     end;
                                     fprintf('\n');
                                 end;
                             end;
-                            
                             %%
                             chanLabLFPsig = [];
                             chanLabSPKsig = [];
-                            if ~isempty (sigIxLFP) && ~isempty(sigIxSPK)
+                            if ~isempty(sigIxLFP) && ~isempty(sigIxSPK)
                                 [ chanLabLFPsig ] = chanLabLFP(sigIxLFP);
                                 [ chanLabSPKsig ] = chanLabSPK(sigIxSPK);
                             end;

@@ -25,6 +25,7 @@ for curBF = 1:length(BFid)
     lfpDat.LFPseg(BFix{curBF}(abs(rms)>3)) = [];
     lfpDat.chanLab(BFix{curBF}(abs(rms)>3)) = [];
 end;
+clear BF*;
 
 %%
 [ lfp ]   = cell(1,length( lfpDat.LFPseg));% lfp data
@@ -32,23 +33,16 @@ end;
 [ delIx ] = cell(1,length( lfpDat.LFPseg));% indexes with delete lfp trials (important for spk data!)
 [ n ]     = zeros(1,length( lfpDat.LFPseg));
 
+%% create average signal over all channels
+parfor curChan = 1:length( lfpDat.LFPseg)
+    avgSig = avgSig + lfpDat.LFPseg{curChan}(:,ismember(lfpDat.trlSel,lfpDat.trlENC));
+end;
+
 %% pre-allocate and initialize
-parfor curChan = 1:length( lfpDat.LFPseg )%loop over channels
-        
+parfor curChan = 1:length( lfpDat.LFPseg )
+    
     [ tmpLFP ] = lfpDat.LFPseg{curChan}(:,ismember(lfpDat.trlSel,lfpDat.trlENC)); % extract trials corresponding to encoding
     
-    %% create average signal of all channels expect current MW channel
-    tmpAVGsig = 0;
-    
-    [ selIx ] = setdiff( 1:length( lfpDat.LFPseg ), curChan );% include indexes of all channels, except current MW
-    for curChan2 = 1:length( selIx )
-        tmpAVGsig = tmpAVGsig + lfpDat.LFPseg{selIx(curChan2)};
-    end;
-    tmpAVGsig = tmpAVGsig/length(selIx);
-    
-    [ tmpAVGsig] = tmpAVGsig(:,ismember(lfpDat.trlSel,lfpDat.trlENC));
-    
-    %% detect trials with artefacts
     % compute RMS of LFP over time
     rms = sqrt(mean(tmpLFP(lfpDat.dsTrlTime>=-0.5 & lfpDat.dsTrlTime <=5,:).^2,1));
     rms = ( rms-mean(rms) )./std(rms);% standardize RMS
@@ -61,14 +55,8 @@ parfor curChan = 1:length( lfpDat.LFPseg )%loop over channels
     
     delIx{curChan} = unique([find(abs(rms) >= 4) find(z >= 4)]);% keep indexes of trials where LFP-activity is out of range (outliers)
     
-    %% delete trials with artefacts
     tmpLFP(:,delIx{curChan}) = []; %delete trials where LFP-activity is out of range (outliers)
-    tmpAVGsig(:,delIx{curChan}) = [];
     
-    %% remove activity from LFP that is phase-locked to average activity, trial by trial
-    [ tmpLFP ] = orthogonalizeTimeDomain( tmpAVGsig , tmpLFP );
-    
-    %%
     % LFP-data must have at least 25 trials in total (hits + misses) per session to perform spectral analysis
     tmp = trlPool;
     tmp(delIx{curChan}) = [];
@@ -76,7 +64,7 @@ parfor curChan = 1:length( lfpDat.LFPseg )%loop over channels
     if (~isempty( tmpLFP) ) && (n(curChan)>25)
         
         m  = ones(size(tmpLFP,1),1)*mean(tmpLFP,1); % mean of LFP over time
-        %sd = ones(size(tmpLFP,1),1)*std(tmpLFP,0,1); % SD of LFP over time
+        sd = ones(size(tmpLFP,1),1)*std(tmpLFP,0,1); % SD of LFP over time
         
         lfp{curChan} = (tmpLFP-m);%./sd;% mean-centered single trial lfp data
         erp{curChan} = lfp{curChan}; % evoked poential

@@ -16,7 +16,7 @@ end;
 [ spk2lfpRnd ] = zeros(length(phi),length(spkTs),nRand);
 
 %%
-for curMW = 1:length(phi)
+parfor curMW = 1:length(phi)
     fprintf([num2str(curMW),'/',num2str(length(phi))]);
     
     if ~isempty(phi{curMW})
@@ -47,7 +47,7 @@ end;
 
 %%
 [ Pval ] = zeros(size(spk2lfp));
-for curMW = 1:size(spk2lfp,1)
+parfor curMW = 1:size(spk2lfp,1)
     for curMW2 = 1:size(spk2lfp,2)
         Pval(curMW,curMW2) = length(find(spk2lfpRnd(curMW,curMW2,:) >= spk2lfp(curMW,curMW2)))/nRand;
     end;
