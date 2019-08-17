@@ -20,9 +20,9 @@ for  curMW = 1:length(spkDat.sortedSpikesSEG ) % loop over micro-wires
     for curUnit = 1:length(cID)
         
         uIx = [];
-        if strcmp(spkMode{curMode},'noSorting')
+        if strcmp(spkMode,'noSorting')
             uIx = 1:length(spkDat.sortedSpikesSEG{curMW}.assignedClusterSeg);%takes all spike-times
-        elseif strcmp(spkMode{curMode},'Sorting')
+        elseif strcmp(spkMode,'Sorting')
             uIx = find(spkDat.sortedSpikesSEG{curMW}.assignedClusterSeg == cID(curUnit));% only spike-times of cluster
         else
             error('spkMode must match either ''noSorting'' or ''Sorting'' ');
@@ -37,7 +37,7 @@ for  curMW = 1:length(spkDat.sortedSpikesSEG ) % loop over micro-wires
             
             % init some vars
             dum1 = cell(1,length( trlIx) );% init
-            dum2 = zeros(length(lfpDat.dsTrlTime),length( trlIx ));% init
+            dum2 = zeros(length(dt)-2,length( trlIx ));% init
             fr = zeros(length( trlIx ),length(dt));% init
             xcTrl= zeros(length( trlIx ),length(dt));%init
             parfor curTrl = 1:length( trlIx )% loop over encoding trials

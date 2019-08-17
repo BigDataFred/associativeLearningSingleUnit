@@ -36,7 +36,7 @@ for curMode = 1:length(spkMode)
                     [ spkDat ] = load([p2d,fN.name])% load data
                     
                     %%
-                    [SPKseg,spkTs,frM,frSD,xc,chanLabSPK] = computeSPKParams( spkDat, spkMode, trlENC, -300:300 );
+                    [SPKseg,spkTs,frM,frSD,xc,chanLabSPK] = computeSPKParams( spkDat, spkMode{curMode}, trlENC, -300:300 );
                     
                     %% find units that are active during encoding
                     [spkSelIx] = filterUnits4SPKrate(spkTs,frM, [0. 4.],100,dsTrlTime);
