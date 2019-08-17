@@ -1,4 +1,4 @@
-function [SPKseg,spkTs,frM,frSD,xc,chanLabSPK] = computeSPKParams(spkDat,spkMode,trlIx,dt)
+function [ SPKseg, spkTs, frM, frSD, xc, chanLabSPK ] = computeSPKParams( spkDat, spkMode, trlIx, dt, dt2 )
 
 %% pre-allocate and initialize
 [ SPKseg ] = {}; [ spkTs ]  = {};
@@ -37,17 +37,17 @@ for  curMW = 1:length(spkDat.sortedSpikesSEG ) % loop over micro-wires
             
             % init some vars
             dum1 = cell(1,length( trlIx) );% init
-            dum2 = zeros(length(dt)-2,length( trlIx ));% init
-            fr = zeros(length( trlIx ),length(dt));% init
+            dum2 = zeros(length(dt2)-2,length( trlIx ));% init
+            fr = zeros(length( trlIx ),length(dt2)-2);% init
             xcTrl= zeros(length( trlIx ),length(dt));%init
             parfor curTrl = 1:length( trlIx )% loop over encoding trials
                 ts2 = ts;
                 tsSel = ts2( trl == trlIx( curTrl ));% filter spike times
                 dum1{curTrl} = tsSel;
-                [n,~] = hist(tsSel,dt);% transform spike timestamps into binary data (0=no spike,1=spike)
+                [n,~] = hist(tsSel,dt2);% transform spike timestamps into binary data (0=no spike,1=spike)
                 
                 dum2(:,curTrl) = n(2:end-1);% get rid of bin-edge artifacts
-                fr(curTrl,:) = conv(n,gausswin(251),'same')./0.251;% compute smoothed firing rate using gaussian kernel
+                fr(curTrl,:) = conv(n(2:end-1),gausswin(251),'same')./0.251;% compute smoothed firing rate using gaussian kernel
                 xcTrl(curTrl,:) = xcorr(n(2:end-1),300); % compute auto-correlation of spike-train
             end;
             SPKseg{uCnt}.trial = dum1;
