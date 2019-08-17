@@ -28,15 +28,17 @@ for curMode = 1:length(spkMode)
                     [ p2d ] = [rdsPath,pId{curPat},'/',expMode{curExp},'/',sesh{curSesh},'/']; %path for preproc data
                     
                     [ fN ]     = dir([p2d,pId{curPat},'_',expMode{curExp},'_',sesh{curSesh},'_lfpDataStimLockedSegmenteddownsampled.mat']);% filename of preproc data
-                    [ lfpDat ] = load([p2d,fN.name])% load data
-                    [ dt ]     = min(lfpDat.dsTrlTime).*1e3-1:1:max(lfpDat.dsTrlTime).*1e3+1;    
+                    [ lfpDat ] = load([p2d,fN.name])% load data                      
                     [ trlENC ] = lfpDat.trlENC;
                     
                     [ fN ]     = dir([p2d,pId{curPat},'_',expMode{curExp},'_',sesh{curSesh},'_spkDataStimLockedSegmented.mat']) %check for existing data
                     [ spkDat ] = load([p2d,fN.name])% load data
                     
-                    %%
-                    [ SPKseg, spkTs, frM, frSD, xc, chanLabSPK ] = computeSPKParams( spkDat, spkMode{curMode}, trlENC, -300:300, dt );
+                    %%                    
+                    [ dt ]    = -300:300; 
+                    [ dt2 ]     = min(lfpDat.dsTrlTime).*1e3-1:1:max(lfpDat.dsTrlTime).*1e3+1;  
+                                        
+                    [ SPKseg, spkTs, frM, frSD, xc, chanLabSPK ] = computeSPKParams( spkDat, spkMode{curMode}, trlENC, dt, dt2 );
                     
                     %% find units that are active during encoding
                     [ spkSelIx ] = filterUnits4SPKrate( spkTs, frM, [0. 4.], 100, lfpDat.dsTrlTime );
