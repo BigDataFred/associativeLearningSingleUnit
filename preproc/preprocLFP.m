@@ -66,7 +66,9 @@ parfor curChan = 1:length( lfpDat.LFPseg )%loop over channels
     tmpAVGsig(:,delIx{curChan}) = [];
     
     %% remove activity from LFP that is phase-locked to average activity, trial by trial
-    [ tmpLFP ] = orthogonalizeTimeDomain( tmpAVGsig , tmpLFP );
+    for curTrl = 1:size( tmpLFP,2 )
+        [ tmpLFP(:,curTrl) ] = orthogonalizeTimeDomain( tmpAVGsig(:,curTrl)' , tmpLFP(:,curTrl)' )';
+    end;
     
     %%
     % LFP-data must have at least 25 trials in total (hits + misses) per session to perform spectral analysis

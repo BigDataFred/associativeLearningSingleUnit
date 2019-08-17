@@ -18,6 +18,11 @@ function [Yo] = orthogonalizeTimeDomain( X , Y )
 % axis tight;
 
 %%
-[Yp] = real( sum(conj( X.*Y ))./sum(conj( X.*X )) )*X; % for stationary signals
+tmpY = hilbert(Y')';
+X = hilbert(X')';
+
+%[Yp] = real( conj( X*tmpY' )/conj( X*X' ))*X; % for stationary signals
+[Yp] = real( conj( X/abs(X) .* tmpY ) )*( X/abs(X) );% 
+
 [Yo] = Y - Yp;
 
