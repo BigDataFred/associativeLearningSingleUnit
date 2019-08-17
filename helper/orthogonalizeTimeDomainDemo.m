@@ -7,14 +7,16 @@ t = 0:1/Fs:1;
 x1 = zeros(100,length(t));
 x2 = zeros(100,length(t));
 for it = 1:100
-    x1(it,:) = sin(2*pi*5.*t) + 1.*randn(1,length(t));
-    x2(it,:) = cos(2*pi*5.*t) + 1.*randn(1,length(t));
+    x1(it,:) = sin(2*pi*5.*t);% + 1.*randn(1,length(t));% pseudo common
+    x2(it,:) = cos(2*pi*5.*t) + 1.*randn(1,length(t));% pseudo signal of interest
 end;
 
-Yo = zeros(100,length(t));
-for it = 1:size(x1,1)
-    [Yo(it,:)] = orthogonalizeTimeDomain(mean(x1,1) , x2(it,:) );
-end
+%x2 = x2+x1;
+
+%Yo = zeros(100,length(t));
+%for it = 1:size(x1,1)
+%    [Yo(it,:)] = orthogonalizeTimeDomain(mean(x1,1) , x2(it,:) );
+%end
 
 [Yo2] = orthogonalizeTimeDomain( ones(size(x1,1),1)*mean(x1,1) , x2 );
 

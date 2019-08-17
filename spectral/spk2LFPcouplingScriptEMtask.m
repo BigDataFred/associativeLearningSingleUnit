@@ -36,7 +36,7 @@ for curPat = 1:length( pId )
                     %%
                     [ trlPool, hitIdx, missIdx, trlENC ] = organizeTrlIdxEM( lfpDat );
                     
-                    [ lfp, erp, delIx, selIx, n, chanLabLFP ] = preprocLFP( lfpDat, trlPool, hitIdx );% preprocess LFP
+                    [ lfp, erp, delIx, selIx, n, chanLabLFP ] = preprocLFP( lfpDat, trlPool, trlENC );% preprocess LFP
                     
                     %% extract phase from LFP
                     [ phi, phiTime, phiFreq ] = computeLFPphase( lfp, lfpDat.dsFs, [min(lfpDat.dsTrlTime) max(lfpDat.dsTrlTime)] );

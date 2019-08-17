@@ -1,4 +1,4 @@
-function [lfp,erp,delIx,selIx,n,chanLabLFP] = preprocLFP( lfpDat, trlPool, hitIdx )
+function [lfp,erp,delIx,selIx,n,chanLabLFP] = preprocLFP( lfpDat, trlPool, trlIdx )
 
 %% extract the labels of Behnke-Fried electrodes
 BFlab = cell(length(lfpDat.chanLab),1);
@@ -35,7 +35,7 @@ end;
 %% pre-allocate and initialize
 parfor curChan = 1:length( lfpDat.LFPseg )%loop over channels
         
-    [ tmpLFP ] = lfpDat.LFPseg{curChan}(:,ismember(lfpDat.trlSel,lfpDat.trlENC)); % extract trials corresponding to encoding
+    [ tmpLFP ] = lfpDat.LFPseg{curChan}(:,ismember(lfpDat.trlSel, trlIdx )); % extract trials corresponding to encoding
     
     %% create average signal of all channels expect current MW channel
     tmpAVGsig = 0;
@@ -46,7 +46,7 @@ parfor curChan = 1:length( lfpDat.LFPseg )%loop over channels
     end;
     tmpAVGsig = tmpAVGsig/length(selIx);
     
-    [ tmpAVGsig] = tmpAVGsig(:,ismember(lfpDat.trlSel,lfpDat.trlENC));
+    [ tmpAVGsig] = tmpAVGsig( : ,ismember( lfpDat.trlSel, trlIdx ) );
     
     %% detect trials with artefacts
     % compute RMS of LFP over time
@@ -70,9 +70,9 @@ parfor curChan = 1:length( lfpDat.LFPseg )%loop over channels
     
     %%
     % LFP-data must have at least 25 trials in total (hits + misses) per session to perform spectral analysis
-    tmp = trlPool;
-    tmp(delIx{curChan}) = [];
-    n(curChan) = length(find(ismember(tmp,hitIdx)));
+    tmptrlPool = trlPool;
+    tmptrlPool(delIx{curChan}) = [];
+    n(curChan) = length(find(ismember(tmptrlPool,trlIdx)));
     if (~isempty( tmpLFP) ) && (n(curChan)>25)
         
         m  = ones(size(tmpLFP,1),1)*mean(tmpLFP,1); % mean of LFP over time

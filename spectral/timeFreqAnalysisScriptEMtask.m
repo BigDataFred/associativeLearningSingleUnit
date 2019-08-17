@@ -51,10 +51,7 @@ for curPat = 1:length(pId) % loop over patients
                 [ p2d ] = [rdsPath,pId{curPat},'/',expMode{curExp},'/',sesh{curSesh},'/']; %path for preproc data
                 [ fN ] = dir([p2d,pId{curPat},'_',expMode{curExp},'_',sesh{curSesh},'_lfpDataStimLockedSegmenteddownsampled.mat']);% filename of preproc data
                 
-                [ lfpDat ] = load([p2d,fN.name])% load data
-                      
-                %%
-                [trlPool,hitIdx,missIdx,trlENC] = organizeTrlIdxEM(lfpDat);
+                [ lfpDat ] = load([p2d,fN.name])% load data                      
                 
                 %%
                 paramsLF.Fs               = lfpDat.dsFs;
@@ -64,7 +61,7 @@ for curPat = 1:length(pId) % loop over patients
                 %%
                 [trlPool,hitIdx,missIdx,trlENC] = organizeTrlIdxEM(lfpDat);
                 
-                [lfp,erp,delIx,selIx,n,chanLabLFP] = preprocLFP( lfpDat, trlPool, hitIdx );
+                [lfp,erp,delIx,selIx,n,chanLabLFP] = preprocLFP( lfpDat, trlPool, trlENC );
                 
                 %%
                 if ( ~isempty(lfp) && ~isempty(erp) && ~isempty(selIx) )
