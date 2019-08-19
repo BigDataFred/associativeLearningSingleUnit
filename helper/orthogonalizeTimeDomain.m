@@ -1,4 +1,7 @@
-function [Yo] = orthogonalizeTimeDomain( X , Y )
+function [Yo,chk] = orthogonalizeTimeDomain( X , Y )
+
+%% This function orthogonalizes the two vectors x and y based on the Gram-Schmidt equation 
+% as specified in https://en.wikipedia.org/wiki/Gram–Schmidt_process
 
 %% proof of principle
 % Fs = 1000;
@@ -18,6 +21,7 @@ function [Yo] = orthogonalizeTimeDomain( X , Y )
 % axis tight;
 
 %%
-[Yp] = real( sum(conj( X.*Y ))./sum(conj( X.*X )) )*X; % for stationary signals
-[Yo] = Y - Yp;
+[Yp] = (sum(X.*Y )./sum(X.*X ))*X; % project signal Y orthogonally onto the line spanned by signal X.
+[Yo] = Y - Yp; % subtract Yp to recover signal Yo which now is orthogonal to signal x (i.e. the dot product of Yo and X vectors now is 0)
+chk=dot(Yo,X); % This value should be zero (or very close to zero)
 
