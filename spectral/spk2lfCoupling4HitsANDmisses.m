@@ -33,13 +33,7 @@ for curPat = 1:length( pId )
                 [ fN ] = dir( [ p2d, pId{curPat}, '_',expMode{curExp}, '_',sesh{curSesh}, '_lfpDataStimLockedSegmenteddownsampled.mat' ] );
                 
                 if ~isempty( fN )
-                    
-                    [ lfpDat ] = load( [ p2d, fN.name ] ) % load the LFP data
-                    [ trlPool, hitIdx, missIdx, trlENC ] = organizeTrlIdxEM( lfpDat );
-                    
-                    %% preproc LFP channels
-                    [ lfp, ~, delIx, ~, ~, chanLabLFP ] = preprocLFP( lfpDat, trlPool, trlENC );% preprocess LFP                    
-                    
+                                        
                     %%
                     for curSpk2LFPmode = 1:length( spk2LFPmode )
                         
@@ -48,15 +42,24 @@ for curPat = 1:length( pId )
                             
                             %% load the spk2LFP coupling data
                             [ fNspk2LFP ] =[ pId{curPat},'_',expMode{curExp},'_',sesh{curSesh},'_spk2LFPCoupling_',spk2LFPmode{curSpk2LFPmode},'_',spkMode{curSpkSortingMode},'_alpha',num2str(alpha),'_nRand',num2str(nRand),'_lowFreq.mat' ];
-                            [ fNspk2LFP ] = dir( [ p2spk2LFPplvDat, fNspk2LFP ] );
+                            [ fNspk2LFP ] = dir( [ p2spk2LFPplvDat, fNspk2LFP ] );                            
                             
                             if ~isempty( fNspk2LFP )
                                 
                                 [ spk2LFPplvDat ] = load([ p2spk2LFPplvDat,fNspk2LFP.name ]);
                                 [ chanLabLFPsig ] = spk2LFPplvDat.chanLabLFPsig;
                                 
-                                if ~isempty(chanLabLFPsig)
+                                %%
+                                if ~isempty( chanLabLFPsig )
                                     
+                                    %%
+                                    [ lfpDat ] = load( [ p2d, fN.name ] ) % load the LFP data
+                                    [ trlPool, hitIdx, missIdx, trlENC ] = organizeTrlIdxEM( lfpDat );
+                    
+                                    %% preproc LFP channels
+                                    [ lfp, ~, delIx, ~, ~, chanLabLFP ] = preprocLFP( lfpDat, trlPool, trlENC );% preprocess LFP                    
+                                    
+                                    %%
                                     [ sigIxLFP ] = zeros( length( spk2LFPplvDat.chanLabLFPsig ), 1 );
                                     for curMW = 1:length( spk2LFPplvDat.chanLabLFPsig )
                                         [ sigIxLFP(curMW) ] = find(strcmp( chanLabLFP, chanLabLFP{ spk2LFPplvDat.sigIxLFP(curMW) } ) );
