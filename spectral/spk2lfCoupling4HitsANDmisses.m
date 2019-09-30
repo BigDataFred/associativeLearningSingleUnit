@@ -132,7 +132,7 @@ for curPat = 1:length( pId )
                                                     hIx = find(ismember(trlPoolTMP,hitIdx));
                                                     mIx = find(ismember(trlPoolTMP,missIdx));
                                                     
-                                                    if (  strcmp(stratMode,'On') || strcmp(stratMode,'on') )% stratifsy number of trials
+                                                    if (  strcmp( stratMode{curSpk2LFPmode},'On') || strcmp( stratMode{curSpk2LFPmode},'on') )% stratifsy number of trials
                                                         rIx = randperm( length( hIx ) );% random permute trial indexes
                                                         hIx = hIx (rIx(1:length( mIx ) ) );% equate number of hits and misses
                                                     end;
