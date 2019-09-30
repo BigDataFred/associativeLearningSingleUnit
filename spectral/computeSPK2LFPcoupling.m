@@ -1,6 +1,7 @@
 function [spk2LFPCoupling] = computeSPK2LFPcoupling( phi, spkIx, spk2LFPmode)
 
 [ spk2LFPCoupling ] = NaN(size( phi,2 ),1);
+phi = phi./abs(phi);
 
 switch spk2LFPmode
     case 'plv'
@@ -27,7 +28,7 @@ switch spk2LFPmode
             ph = squeeze(phi(:,curFreq,:))';
             ph = ph(:);
             ph = ph(spkIx);
-            d = diff(angle(ph(p)),[],2);
+            d = (angle(diffph(p),[],2));
             spk2LFPCoupling(curFreq) = nansum(cos(d))/size(p,1);
         end;
 end;

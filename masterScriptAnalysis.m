@@ -16,9 +16,16 @@ addpath(genpath('~/associativeLearningSingleUnit/'));
 %computeSPKparamsEMtask( pId, expMode, spkMode, savePath, rdsPath  );
 
 %% compute spectral parameters
-timeFreqAnalysisScriptEMtask( pId, expMode, savePath, rdsPath );
+%timeFreqAnalysisScriptEMtask( pId, expMode, savePath, rdsPath );
 
 %% compute spk 2 lfp coupling
 nRand = 200;
 alpha = 0.05;
-spk2LFPcouplingScriptEMtask( pId, expMode, spkMode, spk2LFPmode, nRand, alpha, savePath, rdsPath );
+%spk2LFPcouplingScriptEMtask( pId, expMode, spkMode, spk2LFPmode, nRand, alpha, savePath, rdsPath );
+
+%% compute spk 2 lfp coupling for hits vs misses
+stratMode = {'on', 'on'};
+spk2lfCoupling4HitsANDmisses( pId, expMode, spkMode, spk2LFPmode, rdsPath, savePath, alpha, nRand , stratMode);
+
+stratMode = {'off','off'};
+spk2lfCoupling4HitsANDmisses( pId, expMode, spkMode, spk2LFPmode, rdsPath, savePath, alpha, nRand , stratMode);

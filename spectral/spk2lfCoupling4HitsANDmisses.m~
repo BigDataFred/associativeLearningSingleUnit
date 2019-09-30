@@ -55,10 +55,9 @@ for curPat = 1:length(pId)
                                     [ lfp, ~, delIx, ~, ~, chanLabLFP ] = preprocLFP( lfpDat, trlPool, trlENC );% preprocess LFP
                                     
                                     sigIxLFP = spk2LFPplvDat.sigIxLFP;
-                                    
-                                    [ delIx ] = delIx( sigIxLFP );
-                                    [ lfp ] = lfp( sigIxLFP );
-                                    [ chanLabLFP ] = chanLabLFP( sigIxLFP );
+                                    delIx = delIx( strcmp(chanLabLFP,chanLabLFP( spk2LFPplvDat.sigIxLFP )) );
+                                    lfp = lfp( strcmp(chanLabLFP,chanLabLFP( spk2LFPplvDat.sigIxLFP )) );
+                                    chanLabLFP = chanLabLFP( strcmp(chanLabLFP,chanLabLFP( spk2LFPplvDat.sigIxLFP )) );
                                     
                                     %% extract phase from LFP
                                     [ phi, phiTime, phiFreq ] = computeLFPphase( lfp, lfpDat.dsFs, [min(lfpDat.dsTrlTime) max(lfpDat.dsTrlTime)] );
@@ -120,8 +119,8 @@ for curPat = 1:length(pId)
                                                         hIx = hIx (rIx(1:length( mIx ) ) );% equate number of hits and misses
                                                     end;
                                                     
-                                                    [ spk2LFPCouplingH(curMW,:) ] = computeSPK2LFPcoupling( tmp(hIx,:,:), ts(:,hIx)==1, spk2LFPmode{curSpk2LFPmode} );
-                                                    [ spk2LFPCouplingM(curMW,:) ] = computeSPK2LFPcoupling( tmp(mIx,:,:), ts(:,mIx)==1, spk2LFPmode{curSpk2LFPmode} );
+                                                    [ spk2LFPCouplingH(curMW,:) ] = computeSPK2LFPcoupling( tmp(hIx,:,:), ts(:,hIx), spk2LFPmode{curSpk2LFPmode} );
+                                                    [ spk2LFPCouplingM(curMW,:) ] = computeSPK2LFPcoupling( tmp(mIx,:,:), ts(:,mIx), spk2LFPmode{curSpk2LFPmode} );
                                                 end;
                                                 fprintf('\n');
                                             end;
