@@ -9,7 +9,7 @@ addpath(genpath('~/associativeLearningSingleUnit/'));
 [ spk2LFPmode ] = {'plv','ppc'};% can be either noSorting or Sorting
 
 %%
-[ savePath ] = '~/resultsSpikeFieldJun2019/';
+[ savePath ] = '/media/rouxf/rds-share/resultsAUG2019/';
 [ rdsPath ] = '/media/rouxf/rds-share/iEEG_DATA/MICRO/';
 
 %% compute spk parameters
