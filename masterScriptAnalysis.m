@@ -19,7 +19,7 @@ addpath(genpath('~/associativeLearningSingleUnit/'));
 %timeFreqAnalysisScriptEMtask( pId, expMode, savePath, rdsPath );
 
 %% compute spk 2 lfp coupling
-nRand = 200;
+nRand = 400;
 alpha = 0.05;
 %spk2LFPcouplingScriptEMtask( pId, expMode, spkMode, spk2LFPmode, nRand, alpha, savePath, rdsPath );
 
