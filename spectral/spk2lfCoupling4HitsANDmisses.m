@@ -38,7 +38,7 @@ for curPat = 1:length( pId )
                     [ trlPool, hitIdx, missIdx, trlENC ] = organizeTrlIdxEM( lfpDat );
                     
                     %% preproc LFP channels
-                    [ lfp, ~, delIx, ~, ~, chanLabLFP ] = preprocLFP( lfpDat, trlPool, trlENC );% preprocess LFP
+                    [ lfp, ~, delIx, ~, ~, chanLabLFP ] = preprocLFP( lfpDat, trlPool, trlENC );% preprocess LFP                    
                     
                     %%
                     for curSpk2LFPmode = 1:length( spk2LFPmode )
@@ -70,11 +70,12 @@ for curPat = 1:length( pId )
                                         error('Index mismatch detected')
                                     end;
                                     
-                                    [ delIx ] = delIx( sigIxLFP );
-                                    [ lfp ]   = lfp( sigIxLFP );
+                                    [ delIxTmp ] = delIx( sigIxLFP );
+                                    [ lfpTmp ]   = lfp( sigIxLFP );
                                     
                                     %% extract phase from LFP
-                                    [ phi, phiTime, phiFreq ] = computeLFPphase( lfp, lfpDat.dsFs, [min(lfpDat.dsTrlTime) max(lfpDat.dsTrlTime)] );
+                                    [ phi, phiTime, phiFreq ] = computeLFPphase( lfpTmp, lfpDat.dsFs, [min(lfpDat.dsTrlTime) max(lfpDat.dsTrlTime)] );
+                                    clear lfpTmp;
                                     
                                     %% load the spike data
                                     fN = dir( [ p2SPKd, pId{curPat}, '_', expMode{curExp}, '_', sesh{curSesh}, '_spkParams_', spkMode{curSpkSortingMode},'.mat' ] )
@@ -119,11 +120,12 @@ for curPat = 1:length( pId )
                                                 if ~isempty( phi{curMW} )
                                                     
                                                     [ tmp ] = squeeze( phi{curMW}(:,:,fIx,tIx) );
+                                                    
                                                     [ ts ]  = spkTs{curMW}(tIx,:);
-                                                    ts(:,delIx{curMW}) = [];
+                                                    ts(:,delIxTmp{curMW}) = [];
                                                     
                                                     [ trlPoolTMP ] = trlPool;
-                                                    trlPoolTMP(delIx{curMW}) = [];
+                                                    trlPoolTMP(delIxTmp{curMW}) = [];
                                                     hIx = find(ismember(trlPoolTMP,hitIdx));
                                                     mIx = find(ismember(trlPoolTMP,missIdx));
                                                     
@@ -138,10 +140,12 @@ for curPat = 1:length( pId )
                                                     
                                                     [ spk2LFPCouplingH(curMW,:) ] = computeSPK2LFPcoupling( tmp(hIx,:,:), ix1, spk2LFPmode{curSpk2LFPmode} );
                                                     [ spk2LFPCouplingM(curMW,:) ] = computeSPK2LFPcoupling( tmp(mIx,:,:), ix2, spk2LFPmode{curSpk2LFPmode} );
+                                                    
                                                 end;
                                                 fprintf('\n');
                                             end;
                                         end;
+                                        clear delIxTmp;
                                         
                                         %% save results to disk
                                         saveName =[ pId{curPat},'_',expMode{curExp},'_',sesh{curSesh},'_spk2LFPCouplingHitsANDmisses_',spk2LFPmode{curSpk2LFPmode},'_',spkMode{curSpkSortingMode},'_alpha',num2str(alpha),'_nRand',num2str(nRand),'_stratMode',stratMode{curSpk2LFPmode},'_lowFreq.mat' ];
