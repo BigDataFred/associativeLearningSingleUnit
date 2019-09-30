@@ -28,7 +28,7 @@ switch spk2LFPmode
             ph = squeeze(phi(:,curFreq,:))';
             ph = ph(:);
             ph = ph(spkIx);
-            d = (angle(diffph(p),[],2));
+            d = angle(diff(ph(p),[],2));
             spk2LFPCoupling(curFreq) = nansum(cos(d))/size(p,1);
         end;
 end;
