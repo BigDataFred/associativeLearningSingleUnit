@@ -24,8 +24,8 @@ alpha = 0.05;
 %spk2LFPcouplingScriptEMtask( pId, expMode, spkMode, spk2LFPmode, nRand, alpha, savePath, rdsPath );
 
 %% compute spk 2 lfp coupling for hits vs misses
-stratMode = {'On', 'On'};
+stratMode = {'On'};
 spk2lfCoupling4HitsANDmisses( pId, expMode, spkMode, spk2LFPmode, rdsPath, savePath, alpha, nRand , stratMode);
 
-stratMode = {'Off','Off'};
+stratMode = {'Off'};
 spk2lfCoupling4HitsANDmisses( pId, expMode, spkMode, spk2LFPmode, rdsPath, savePath, alpha, nRand , stratMode);
