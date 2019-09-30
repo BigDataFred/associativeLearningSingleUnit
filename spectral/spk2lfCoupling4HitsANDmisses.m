@@ -15,8 +15,8 @@ if isempty( gcp('Nocreate') )
 end;
 
 %%
-for curPat = 1:length(pId)
-    for curExp = 1:length(expMode)
+for curPat = 1:length( pId )
+    for curExp = 1:length( expMode )
         
         [ tmp ] = dir( [ rdsPath, pId{curPat},'/', expMode{curExp}, '/' ] );
         
@@ -26,32 +26,32 @@ for curPat = 1:length(pId)
             clear tmp;
             
             %%
-            for curSesh = 1:length(sesh)
+            for curSesh = 1:length( sesh )
                 
-                p2d = [ rdsPath, pId{curPat}, '/' ,expMode{curExp}, '/',sesh{curSesh}, '/' ];
-                fN = dir( [ p2d, pId{curPat}, '_',expMode{curExp}, '_',sesh{curSesh}, '_lfpDataStimLockedSegmenteddownsampled.mat' ] );
+                [ p2d ] = [ rdsPath, pId{curPat}, '/' ,expMode{curExp}, '/',sesh{curSesh}, '/' ];
+                [ fN ] = dir( [ p2d, pId{curPat}, '_',expMode{curExp}, '_',sesh{curSesh}, '_lfpDataStimLockedSegmenteddownsampled.mat' ] );
                 
-                if ~isempty(fN)
+                if ~isempty( fN )
                     
-                    [ lfpDat ] = load( [ p2d, fN.name ] )% load the LFP data
+                    [ lfpDat ] = load( [ p2d, fN.name ] ) % load the LFP data
                     [ trlPool, hitIdx, missIdx, trlENC ] = organizeTrlIdxEM( lfpDat );
                     
                     %% preproc LFP channels
                     [ lfp, ~, delIx, ~, ~, chanLabLFP ] = preprocLFP( lfpDat, trlPool, trlENC );% preprocess LFP
                                 
                     %%
-                    for curSpk2LFPmode = 1:length(spk2LFPmode)
+                    for curSpk2LFPmode = 1:length( spk2LFPmode )
                         
                         %%
-                        for curSpkSortingMode = 1:length(spkMode)
+                        for curSpkSortingMode = 1:length( spkMode )
                             
                             %% load the spk2LFP coupling data
                             [ fNspk2LFP ] =[ pId{curPat},'_',expMode{curExp},'_',sesh{curSesh},'_spk2LFPCoupling_',spk2LFPmode{curSpk2LFPmode},'_',spkMode{curSpkSortingMode},'_alpha',num2str(alpha),'_nRand',num2str(nRand),'_lowFreq.mat' ];
-                            fNspk2LFP = dir([p2spk2LFPplvDat,fNspk2LFP]);
+                            [ fNspk2LFP ] = dir( [ p2spk2LFPplvDat, fNspk2LFP ] );
                             
-                            if ~isempty(fNspk2LFP)
+                            if ~isempty( fNspk2LFP )
                                 
-                                [ spk2LFPplvDat ] = load([p2spk2LFPplvDat,fNspk2LFP.name]);
+                                [ spk2LFPplvDat ] = load([ p2spk2LFPplvDat,fNspk2LFP.name ]);
                                 [ chanLabLFPsig ] = spk2LFPplvDat.chanLabLFPsig;                                                               
                                 
                                 [ sigIxLFP ] = zeros( length( spk2LFPplvDat.chanLabLFPsig ), 1 );
@@ -68,7 +68,7 @@ for curPat = 1:length(pId)
                                 end;
                                 
                                 [ delIx ] = delIx( sigIxLFP );
-                                [ lfp ] = lfp( sigIxLFP );
+                                [ lfp ]   = lfp( sigIxLFP );
                                 
                                 %% extract phase from LFP
                                 [ phi, phiTime, phiFreq ] = computeLFPphase( lfp, lfpDat.dsFs, [min(lfpDat.dsTrlTime) max(lfpDat.dsTrlTime)] );
@@ -140,7 +140,7 @@ for curPat = 1:length(pId)
                                         end;
                                     end;
                                     
-                                    %%
+                                    %% save results to disk
                                     saveName =[ pId{curPat},'_',expMode{curExp},'_',sesh{curSesh},'_spk2LFPCouplingHitsANDmisses_',spk2LFPmode{curSpk2LFPmode},'_',spkMode{curSpkSortingMode},'_alpha',num2str(alpha),'_nRand',num2str(nRand),'_stratMode',stratMode{curSpk2LFPmode},'_lowFreq.mat' ];
                                     save([savePath,saveName],'spk2LFPfreqAx','spk2LFPCouplingH','spk2LFPCouplingM','chanLabLFPsig','chanLabSPKsig','sigIxLFP','sigIxSPK','-v7.3');
                                     
@@ -150,7 +150,6 @@ for curPat = 1:length(pId)
                             end;
                         end;
                     end;
-                    clear lfpDat hitmiss;
                 end;
             end
         end;
