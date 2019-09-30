@@ -30,9 +30,9 @@ for curPat = 1:length( pId )
             for curSesh = 1:length( sesh )
                 
                 [ p2d ] = [ rdsPath, pId{curPat}, '/' ,expMode{curExp}, '/',sesh{curSesh}, '/' ];
-                [ fN ] = dir( [ p2d, pId{curPat}, '_',expMode{curExp}, '_',sesh{curSesh}, '_lfpDataStimLockedSegmenteddownsampled.mat' ] );
+                [ lfpDatfN ] = dir( [ p2d, pId{curPat}, '_',expMode{curExp}, '_',sesh{curSesh}, '_lfpDataStimLockedSegmenteddownsampled.mat' ] );
                 
-                if ~isempty( fN )
+                if ~isempty( lfpDatfN )
                                         
                     %%
                     for curSpk2LFPmode = 1:length( spk2LFPmode )
@@ -53,7 +53,7 @@ for curPat = 1:length( pId )
                                 if ~isempty( chanLabLFPsig )
                                     
                                     %%
-                                    [ lfpDat ] = load( [ p2d, fN.name ] ) % load the LFP data
+                                    [ lfpDat ] = load( [ p2d, lfpDatfN.name ] ) % load the LFP data
                                     [ trlPool, hitIdx, missIdx, trlENC ] = organizeTrlIdxEM( lfpDat );
                     
                                     %% preproc LFP channels
@@ -81,8 +81,8 @@ for curPat = 1:length( pId )
                                     clear lfpTmp;
                                     
                                     %% load the spike data
-                                    fN = dir( [ p2SPKd, pId{curPat}, '_', expMode{curExp}, '_', sesh{curSesh}, '_spkParams_', spkMode{curSpkSortingMode},'.mat' ] )
-                                    [ spkDat ] = load( [ p2SPKd, fN.name ] )
+                                    [spkDatfN ] = dir( [ p2SPKd, pId{curPat}, '_', expMode{curExp}, '_', sesh{curSesh}, '_spkParams_', spkMode{curSpkSortingMode},'.mat' ] )
+                                    [ spkDat ] = load( [ p2SPKd, spkDatfN.name ] )
                                     
                                     %% Readout sig SPK channels
                                     [ sigIxSPK ]      = spk2LFPplvDat.sigIxSPK;
