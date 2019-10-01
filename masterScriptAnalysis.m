@@ -3,9 +3,9 @@
 addpath(genpath('~/associativeLearningSingleUnit/'));
 
 %%
-[ pId ] = {'P02','P04','P05','P07','P08','P09','P03ERL','P22AMS','P23AMS'};%
-[ expMode ] = {'fVSpEM','cnEM'};
-[ spkMode ] = {'Sorting','noSorting'};% can be either noSorting or Sorting
+[ pId ] = {'P08'};%{'P02','P04','P05','P07','P08','P09','P03ERL','P22AMS','P23AMS'};%
+[ expMode ] = {'cnEM'};%{'fVSpEM','cnEM'};
+[ spkMode ] = {'Sorting'};%{'Sorting','noSorting'};% can be either noSorting or Sorting
 [ spk2LFPmode ] = {'plv','ppc'};% can be either noSorting or Sorting
 
 %%
