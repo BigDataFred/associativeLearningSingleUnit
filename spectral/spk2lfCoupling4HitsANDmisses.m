@@ -55,66 +55,67 @@ for curPat = 1:length( pId )
                                     %%
                                     [ lfpDat ] = load( [ p2d, lfpDatfN.name ] ) % load the LFP data
                                     [ trlPool, hitIdx, missIdx, trlENC ] = organizeTrlIdxEM( lfpDat );
+                                                                        
+                                    %% preproc LFP channels
+                                    [ lfp, ~, delIx, ~, ~, chanLabLFP ] = preprocLFP( lfpDat, trlPool, trlENC );% preprocess LFP
                                     
-                                    if ( length( hitIdx ) >= length( missIdx ) )
-                                        
-                                        %% preproc LFP channels
-                                        [ lfp, ~, delIx, ~, ~, chanLabLFP ] = preprocLFP( lfpDat, trlPool, trlENC );% preprocess LFP
-                                        
-                                        %%
-                                        [ sigIxLFP ] = zeros( length( spk2LFPplvDat.chanLabLFPsig ), 1 );
-                                        for curMW = 1:length( spk2LFPplvDat.chanLabLFPsig )
-                                            [ sigIxLFP(curMW) ] = find(strcmp( chanLabLFP, chanLabLFP{ spk2LFPplvDat.sigIxLFP(curMW) } ) );
-                                        end;
-                                        
-                                        if ~isequal( sigIxLFP, spk2LFPplvDat.sigIxLFP )
-                                            error('Index mismatch detected')
-                                        end;
-                                        
-                                        if ~( strcmp(chanLabLFP(sigIxLFP),chanLabLFPsig) )
-                                            error('Index mismatch detected')
-                                        end;
-                                        
-                                        [ delIxTmp ] = delIx( sigIxLFP );
-                                        [ lfpTmp ]   = lfp( sigIxLFP );
-                                        
-                                        %% extract phase from LFP
-                                        [ phi, phiTime, phiFreq ] = computeLFPphase( lfpTmp, lfpDat.dsFs, [min(lfpDat.dsTrlTime) max(lfpDat.dsTrlTime)] );
-                                        clear lfpTmp;
-                                        
-                                        %% load the spike data
-                                        [spkDatfN ] = dir( [ p2SPKd, pId{curPat}, '_', expMode{curExp}, '_', sesh{curSesh}, '_spkParams_', spkMode{curSpkSortingMode},'.mat' ] )
-                                        [ spkDat ] = load( [ p2SPKd, spkDatfN.name ] )
-                                        
-                                        %% Readout sig SPK channels
-                                        [ sigIxSPK ]      = spk2LFPplvDat.sigIxSPK;
-                                        [ spkTs ]         = spkDat.spkTs(sigIxSPK) ;
-                                        [ chanLabSPKsig ] = spkDat.chanLabSPK(sigIxSPK);
-                                        
-                                        %% safety checks
-                                        chck = zeros(1,length(phi));
-                                        for curChan = 1:length(phi)
-                                            chck(curChan) = ~isempty(phi{curChan});
-                                        end;
-                                        
-                                        chck2 = zeros(1,length(spkTs));
-                                        for curChan = 1:length(spkTs)
-                                            chck2(curChan) = ~isempty(spkTs{curChan});
-                                        end;
-                                        clear spkDat;
+                                    %%
+                                    [ sigIxLFP ] = zeros( length( spk2LFPplvDat.chanLabLFPsig ), 1 );
+                                    for curMW = 1:length( spk2LFPplvDat.chanLabLFPsig )
+                                        [ sigIxLFP(curMW) ] = find(strcmp( chanLabLFP, chanLabLFP{ spk2LFPplvDat.sigIxLFP(curMW) } ) );
+                                    end;
+                                    
+                                    if ~isequal( sigIxLFP, spk2LFPplvDat.sigIxLFP )
+                                        error('Index mismatch detected')
+                                    end;
+                                    
+                                    if ~( strcmp(chanLabLFP(sigIxLFP),chanLabLFPsig) )
+                                        error('Index mismatch detected')
+                                    end;
+                                    
+                                    [ delIxTmp ] = delIx( sigIxLFP );
+                                    [ lfpTmp ]   = lfp( sigIxLFP );
+                                    
+                                    %% extract phase from LFP
+                                    [ phi, phiTime, phiFreq ] = computeLFPphase( lfpTmp, lfpDat.dsFs, [min(lfpDat.dsTrlTime) max(lfpDat.dsTrlTime)] );
+                                    clear lfpTmp;
+                                    
+                                    %% load the spike data
+                                    [spkDatfN ] = dir( [ p2SPKd, pId{curPat}, '_', expMode{curExp}, '_', sesh{curSesh}, '_spkParams_', spkMode{curSpkSortingMode},'.mat' ] )
+                                    [ spkDat ] = load( [ p2SPKd, spkDatfN.name ] )
+                                    
+                                    %% Readout sig SPK channels
+                                    [ sigIxSPK ]      = spk2LFPplvDat.sigIxSPK;
+                                    [ spkTs ]         = spkDat.spkTs(sigIxSPK) ;
+                                    [ chanLabSPKsig ] = spkDat.chanLabSPK(sigIxSPK);
+                                    
+                                    %% safety checks
+                                    chck = zeros(1,length(phi));
+                                    for curChan = 1:length(phi)
+                                        chck(curChan) = ~isempty(phi{curChan});
+                                    end;
+                                    
+                                    chck2 = zeros(1,length(spkTs));
+                                    for curChan = 1:length(spkTs)
+                                        chck2(curChan) = ~isempty(spkTs{curChan});
+                                    end;
+                                    clear spkDat;
+                                    
+                                    %%
+                                    if any(chck~=0) && any(chck2~=0)
                                         
                                         %%
-                                        if any(chck~=0) && any(chck2~=0)
-                                            
-                                            %%
-                                            for curMW = 1:length(phi)
-                                                if ~isempty(phi{curMW})
-                                                    tIx = find( phiTime >=-.5 & phiTime < 5 );
-                                                    fIx = find( phiFreq >=0 & phiFreq <=30 );
-                                                    spk2LFPfreqAx = phiFreq;
-                                                    break;
-                                                end;
+                                        for curMW = 1:length(phi)
+                                            if ~isempty(phi{curMW})
+                                                tIx = find( phiTime >=-.5 & phiTime < 5 );
+                                                fIx = find( phiFreq >=0 & phiFreq <=30 );
+                                                spk2LFPfreqAx = phiFreq;
+                                                break;
                                             end;
+                                        end;
+                                        
+                                        %%
+                                        for curStratMode = 1:length( stratMode )
                                             
                                             %% compute spk2LFP coupling for Hits & Misses
                                             [ spk2LFPCouplingH ] = NaN( length( sigIxLFP ), length( fIx ) );
@@ -134,9 +135,14 @@ for curPat = 1:length( pId )
                                                         hIx = find(ismember(trlPoolTMP,hitIdx));
                                                         mIx = find(ismember(trlPoolTMP,missIdx));
                                                         
-                                                        if (  strcmp( stratMode{curSpk2LFPmode},'On') || strcmp( stratMode{curSpk2LFPmode},'on') )% stratifsy number of trials
-                                                            rIx = randperm( length( hIx ) );% random permute trial indexes
-                                                            hIx = hIx (rIx(1:length( mIx ) ) );% equate number of hits and misses
+                                                        if (  strcmp( stratMode{curStratMode},'On') || strcmp( stratMode{curStratMode},'on') )% stratifsy number of trials
+                                                            if ( length( hIx ) > length( mIx ) )
+                                                                rIx = randperm( length( hIx ) );% random permute trial indexes
+                                                                hIx = hIx( rIx( 1:length( mIx ) ) );% equate number of hits and misses
+                                                            elseif ( length( hIx ) < length( mIx ) )
+                                                                rIx = randperm( length( mIx ) );% random permute trial indexes
+                                                                mIx = mIx( rIx( 1:length( hIx ) ) );% equate number of hits and misses
+                                                            end;
                                                         end;
                                                         
                                                         ix1 = find(ts(:,hIx)==1);
@@ -153,11 +159,12 @@ for curPat = 1:length( pId )
                                             clear delIxTmp;
                                             
                                             %% save results to disk
-                                            saveName =[ pId{curPat},'_',expMode{curExp},'_',sesh{curSesh},'_spk2LFPCouplingHitsANDmisses_',spk2LFPmode{curSpk2LFPmode},'_',spkMode{curSpkSortingMode},'_alpha',num2str(alpha),'_nRand',num2str(nRand),'_stratMode',stratMode{curSpk2LFPmode},'_lowFreq.mat' ];
+                                            saveName =[ pId{curPat},'_',expMode{curExp},'_',sesh{curSesh},'_spk2LFPCouplingHitsANDmisses_',spk2LFPmode{curSpk2LFPmode},'_',spkMode{curSpkSortingMode},'_alpha',num2str(alpha),'_nRand',num2str(nRand),'_stratMode',stratMode{curStratMode},'_lowFreq.mat' ];
                                             save([savePath,saveName],'spk2LFPfreqAx','spk2LFPCouplingH','spk2LFPCouplingM','chanLabLFPsig','chanLabSPKsig','sigIxLFP','sigIxSPK','-v7.3');
                                             
                                             clear spk2LFPfreqAx spk2LFPCoupling* chanLabLFPsig chanLabSPKsig sigLFPix sigIxSPK;
                                         end;
+                                        
                                     end;
                                 end;
                             end;
