@@ -16,8 +16,6 @@ for curFile = 1:length( fN )
             chanCnt = chanCnt +1;
             plvH(chanCnt,:) = tmpDat.spk2LFPCouplingH(curChan,:);
             plvM(chanCnt,:) = tmpDat.spk2LFPCouplingM(curChan,:);
-        else 
-            fprintf('TOTO');
         end;
     end;
     
@@ -66,7 +64,7 @@ for curFile = 1:length( fN )
             plvH(chanCnt,:) = tmpDat.spk2LFPCouplingH(curChan,:);
             plvM(chanCnt,:) = tmpDat.spk2LFPCouplingM(curChan,:);
         else
-            fprintf('TOTO');
+            print('TOTO');
         end;
     end;
     

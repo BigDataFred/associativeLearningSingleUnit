@@ -3,11 +3,11 @@
 addpath(genpath('~/associativeLearningSingleUnit/'));
 
 %%
-[ pId ] = {'P02'};%{'P02','P04','P05','P07','P08','P09','P03ERL','P22AMS','P23AMS'};%
+[ pId ] = {'P02','P04','P05','P07','P08','P09','P03ERL','P22AMS','P23AMS'};%
 [ expMode ] = {'fVSpEM','cnEM'};
 [ spkMode ] = {'Sorting','noSorting'};% can be either noSorting or Sorting
 [ spk2LFPmode ] = {'plv','ppc'};% can be either noSorting or Sorting
-[ stratMode ] = {'On','Off'};
+[ stratMode ] = {'On'};%{'On','Off'}
 
 %%
 [ savePath ] = '/media/rouxf/rds-share/resultsAUG2019/';
