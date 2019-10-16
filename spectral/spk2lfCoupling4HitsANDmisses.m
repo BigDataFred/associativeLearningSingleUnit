@@ -23,7 +23,7 @@ for curPat = 1:length( pId )
         
         if ~isempty(tmp)
             
-            [ sesh ] = extractSeshLabels( tmp );
+            [ sesh ] = extractSeshLabels( tmp );%2016-07-17_13-45
             clear tmp;
             
             %%
@@ -137,53 +137,55 @@ for curPat = 1:length( pId )
                                                         mIx = find(ismember(trlPoolTMP,missIdx));
                                                         
                                                         ix1 = find( ts(:,hIx ) ==1 )';
-                                                        ix2 = find(ts(:,mIx )==1)';
+                                                        ix2 = find( ts(:,mIx ) ==1 )';
                                                         
-                                                        if (  strcmp( stratMode{curStratMode},'On') || strcmp( stratMode{curStratMode},'on') )% stratifsy number of trials
+                                                         if ~isempty(ix1) && ~isempty(ix2)
+                                                             
+                                                            if (  strcmp( stratMode{curStratMode},'On') || strcmp( stratMode{curStratMode},'on') )% stratifsy number of trials
+                                                                
+                                                                if ( length( ix1 ) > length( ix2 ) )
+                                                                    rIx = randperm( length( ix1 ) );% random permute trial indexes
+                                                                    cnt = 0;
+                                                                    nsamp = fix( length( ix1 )/ length( ix2 ) );
+                                                                    tmpIx = [];
+                                                                    for curSamp = 1:nsamp
+                                                                        if ~isempty( rIx ) && ( length( rIx) >= length( ix2 ) )
+                                                                            cnt = cnt+1;
+                                                                            tmpIx(cnt,:) = ix1( rIx( 1:length( ix2 ) ) );% equate number of spks 4 hits and misses
+                                                                            rIx(1:length( ix2 )) = [];
+                                                                        end;
+                                                                    end;
+                                                                    ix1 = tmpIx; clear tmpIx;
+                                                                elseif ( length( ix1 ) < length( ix2 ) )
+                                                                    rIx = randperm( length( ix2 ) );% random permute trial indexes
+                                                                    cnt = 0;
+                                                                    nsamp = fix( length( ix2 )/ length( ix1 ) );
+                                                                    tmpIx = [];
+                                                                    for curSamp = 1:nsamp
+                                                                        if ~isempty( rIx ) && ( length( rIx) >= length( ix1 ) )
+                                                                            cnt = cnt+1;
+                                                                            tmpIx(cnt,:) = ix2( rIx( 1:length( ix1 ) ) );% equate number of spks 4 hits and misses
+                                                                            rIx(1:length( ix1 )) = [];
+                                                                        end;
+                                                                    end;
+                                                                    ix2 = tmpIx;clear tmpIx;
+                                                                end;
+                                                            end;
                                                             
-                                                            if ( length( ix1 ) > length( ix2 ) )
-                                                                rIx = randperm( length( ix1 ) );% random permute trial indexes
-                                                                cnt = 0;
-                                                                nsamp = fix( length( ix1 )/ length( ix2 ) );
-                                                                tmpIx = [];
-                                                                for curSamp = 1:nsamp
-                                                                    if ~isempty( rIx ) && ( length( rIx) >= length( ix2 ) )
-                                                                        cnt = cnt+1;
-                                                                        tmpIx(cnt,:) = ix1( rIx( 1:length( ix2 ) ) );% equate number of spks 4 hits and misses
-                                                                        rIx(1:length( ix2 )) = [];
-                                                                    end;
-                                                                end;
-                                                                ix1 = tmpIx; clear tmpIx;
-                                                            elseif ( length( ix1 ) < length( ix2 ) )
-                                                                rIx = randperm( length( ix2 ) );% random permute trial indexes
-                                                                cnt = 0;
-                                                                nsamp = fix( length( ix2 )/ length( ix1 ) );
-                                                                tmpIx = [];
-                                                                for curSamp = 1:nsamp
-                                                                    if ~isempty( rIx ) && ( length( rIx) >= length( ix1 ) )
-                                                                        cnt = cnt+1;
-                                                                        tmpIx(cnt,:) = ix2( rIx( 1:length( ix1 ) ) );% equate number of spks 4 hits and misses
-                                                                        rIx(1:length( ix1 )) = [];
-                                                                    end;
-                                                                end;
-                                                                ix2 = tmpIx;clear tmpIx;
-                                                            end;                                                                                                                                                                                                                                                                                                                                                                        
+                                                            x = [];
+                                                            for curSamp = 1:size( ix1,1)
+                                                                [ x(curSamp,:) ] = computeSPK2LFPcoupling( tmp(hIx,:,:), ix1(curSamp,:), spk2LFPmode{curSpk2LFPmode} );
+                                                            end;
+                                                            [ spk2LFPCouplingH(curMW,:) ] = mean(x,1);
+                                                            
+                                                            x = [];
+                                                            for curSamp = 1:size( ix2,1)
+                                                                [ x(curSamp,:) ] = computeSPK2LFPcoupling( tmp(mIx,:,:), ix2(curSamp,:), spk2LFPmode{curSpk2LFPmode} );
+                                                            end;
+                                                            [ spk2LFPCouplingM(curMW,:) ] = mean(x,1);
+                                                            
+                                                            ts = [];
                                                         end;
-                                                        
-                                                        x = [];
-                                                        for curSamp = 1:size( ix1,1)
-                                                            [ x(curSamp,:) ] = computeSPK2LFPcoupling( tmp(hIx,:,:), ix1(curSamp,:), spk2LFPmode{curSpk2LFPmode} );
-                                                        end;
-                                                        [ spk2LFPCouplingH(curMW,:) ] = mean(x,1);
-                                                        
-                                                        x = [];
-                                                        for curSamp = 1:size( ix2,1)
-                                                            [ x(curSamp,:) ] = computeSPK2LFPcoupling( tmp(mIx,:,:), ix2(curSamp,:), spk2LFPmode{curSpk2LFPmode} );
-                                                        end;
-                                                        [ spk2LFPCouplingM(curMW,:) ] = mean(x,1);
-                                                        
-                                                        ts = [];
-                                                        
                                                     end;
                                                     fprintf('\n');
                                                 end;
@@ -192,9 +194,13 @@ for curPat = 1:length( pId )
                                             %% save results to disk
                                             saveName =[ pId{curPat},'_',expMode{curExp},'_',sesh{curSesh},'_spk2LFPCouplingHitsANDmisses_',spk2LFPmode{curSpk2LFPmode},'_',spkMode{curSpkSortingMode},'_alpha',num2str(alpha),'_nRand',num2str(nRand),'_stratMode',stratMode{curStratMode},'_lowFreq.mat' ];
                                             save([savePath,saveName],'spk2LFPfreqAx','spk2LFPCouplingH','spk2LFPCouplingM','chanLabLFPsig','chanLabSPKsig','sigIxLFP','sigIxSPK','-v7.3');
+                                            
                                         end;
+                                        
+                                        %%
                                         clear delIxTmp;
                                         clear spk2LFPfreqAx spk2LFPCoupling* chanLabLFPsig chanLabSPKsig sigLFPix sigIxSPK;
+                                        
                                     end;
                                 end;
                             end;
