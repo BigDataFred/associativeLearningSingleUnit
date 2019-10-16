@@ -12,9 +12,12 @@ expMode = {'fVSpEM','cnEM'};
 
 %%
 cntChan = 0;
-poolPow1 = zeros(947,550,246);
-poolPow2 = zeros(947,550,1147);
+poolPowLF = zeros(947,550,246);
+poolPowHF = zeros(947,550,1147);
+poolPowLFn = zeros(947,550,246);
+poolPowHFn = zeros(947,550,1147);
 
+%%
 for curPat = 1:length( pID )
     for curExp = 1:length( expMode )
         
@@ -45,14 +48,22 @@ for curPat = 1:length( pID )
                         cntChan = cntChan +1;
                         
                         x = tfrDat1.SxxLF{selIx(curChan)};
-                        x = x(tfrDat1.tx-7>=-.5 & tfrDat1.tx-7<=5,:);
-                        x = (x-min(min(x)))./(max(max(x))-min(min(x)));
-                        poolPow1(cntChan,:,:) = x;
+                        x = x(tfrDat1.tx-7>=-.5 & tfrDat1.tx-7<=5,:);    
+                        bIx = 1:length( find( tfrDat1.tx-7>=-.5 & tfrDat1.tx-7<=0 ) );
+                        m  = ones(size(x,1),1)*mean(x(bIx,:),1);
+                        poolPowLFn(cntChan,:,:) = 10*log10(x)-10*log10(m);
+                        x = (x-min(min(x)))./(max(max(x))-min(min(x)));      
+                        poolPowLF(cntChan,:,:) = x;
+                        
                         
                         x = tfrDat2.SxxHF{selIx(curChan)};
-                        x = x(tfrDat2.tx-7>=-.5 & tfrDat2.tx-7<=5,:);
+                        x = x(tfrDat2.tx-7>=-.5 & tfrDat2.tx-7<=5,:);    
+                        bIx = 1:length( find( tfrDat1.tx-7>=-.5 & tfrDat1.tx-7<=0 ) );
+                        m  = ones(size(x,1),1)*mean(x(bIx,:),1);
+                        poolPowHFn(cntChan,:,:) = 10*log10(x)-10*log10(m);
                         x = (x-min(min(x)))./(max(max(x))-min(min(x)));
-                        poolPow2(cntChan,:,:) = x;
+                        poolPowHF(cntChan,:,:) = x;
+                        
                     end;
                 %end;
             end;
@@ -67,11 +78,11 @@ figure;
 
 subplot(221);
 hold on;
-plot(tfrDat1.fx,squeeze(mean(poolPow1,2)),'Color',[.75 .75 .75]);
-plot(tfrDat1.fx,squeeze(mean(mean(poolPow1,2),1)),'k','LineWidth',3);
+plot(tfrDat1.fx,squeeze(mean(poolPowLF,2)),'Color',[.75 .75 .75]);
+plot(tfrDat1.fx,squeeze(mean(mean(poolPowLF,2),1)),'k','LineWidth',3);
 
 subplot(222);
-x = squeeze(mean(poolPow1,2));
+x = squeeze(mean(poolPowLF,2));
 mF = zeros(size(x,1),1);
 for it = 1:size( x,1 )
     [~,mIx] = max( x(it,:) );
@@ -82,23 +93,23 @@ plot(x,n,'k','LineWidth',3);
 
 subplot(223);
 hold on;
-plot(tfrDat1.fx,squeeze(mean(poolPow1(mF >=2 & mF <=20,:,:),2)),'Color',[.75 .75 .75]);
-plot(tfrDat1.fx,squeeze(mean(mean(poolPow1(mF >=2 & mF <=20,:,:),2),1)),'r','LineWidth',3);
+plot(tfrDat1.fx,squeeze(mean(poolPowLF(mF >=2 & mF <=25,:,:),2)),'Color',[.75 .75 .75]);
+plot(tfrDat1.fx,squeeze(mean(mean(poolPowLF(mF >=2 & mF <=25,:,:),2),1)),'r','LineWidth',3);
 
 subplot(224);
 hold on;
-plot(tfrDat2.fx,squeeze(mean(poolPow2(mF >=2 & mF <=20,:,:),2)),'Color',[.75 .75 .75]);
-plot(tfrDat2.fx,squeeze(mean(mean(poolPow2(mF >=2 & mF <=20,:,:),2),1)),'r','LineWidth',3);
+plot(tfrDat2.fx,squeeze(mean(poolPowHF(mF >=2 & mF <=25,:,:),2)),'Color',[.75 .75 .75]);
+plot(tfrDat2.fx,squeeze(mean(mean(poolPowHF(mF >=2 & mF <=25,:,:),2),1)),'r','LineWidth',3);
 
 %%
 figure;
-imagesc( tfrDat1.tx-7, tfrDat1.fx, squeeze( mean( poolPow1(mF >=2 & mF <=20,:,:),1 ) )' );
+imagesc( tfrDat1.tx-7, tfrDat1.fx, squeeze( mean( poolPowLFn(mF >=2 & mF <=25,:,:),1 ) )' );
 axis xy;
 xlim([-.5 5]);
 colormap jet;
 
 figure;
-imagesc( tfrDat2.tx-7, tfrDat2.fx, squeeze( mean( poolPow2(mF >=2 & mF <=20,:,:),1 ) )' );
+imagesc( tfrDat2.tx-7, tfrDat2.fx, squeeze( mean( poolPowHFn(mF >=2 & mF <=25,:,:),1 ) )' );
 axis xy;
 xlim([-.5 5]);
 colormap jet;

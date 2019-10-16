@@ -6,7 +6,7 @@ addpath(genpath('~/associativeLearningSingleUnit/'));
 [ pId ] = {'P02','P04','P05','P07','P08','P09','P03ERL','P22AMS','P23AMS'};%
 [ expMode ] = {'fVSpEM','cnEM'};
 [ spkMode ] = {'Sorting','noSorting'};% can be either noSorting or Sorting
-[ spk2LFPmode ] = {'plv','ppc'};% can be either noSorting or Sorting
+[ spk2LFPmode ] = {'ppc'};%{'plv','ppc'};% can be either noSorting or Sorting
 [ stratMode ] = {'On'};%{'On','Off'}
 
 %%
@@ -26,3 +26,6 @@ alpha = 0.05;
 
 %% compute spk 2 lfp coupling for hits vs misses
 spk2lfCoupling4HitsANDmisses( pId, expMode, spkMode, spk2LFPmode, rdsPath, savePath, alpha, nRand , stratMode);
+
+%%
+exit;

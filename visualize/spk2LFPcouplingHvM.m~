@@ -2,7 +2,7 @@
 addpath('~/associativeLearningSingleUnit/helper/');
 p2dat = '/media/rouxf/rds-share/resultsAUG2019/';
 
-[ fN ] = dir([ p2dat, '*_spk2LFPCouplingHitsANDmisses_ppc_Sorting_alpha0.05_nRand400_stratModeOff_lowFreq.mat' ]);
+[ fN ] = dir([ p2dat, '*_spk2LFPCouplingHitsANDmisses_plv_Sorting_alpha0.05_nRand400_stratModeOff_lowFreq.mat' ]);
 
 plvH = [];
 plvM = [];
@@ -53,7 +53,7 @@ xlabel('Frequency [Hz]');
 %%
 p2dat = '/media/rouxf/rds-share/resultsAUG2019/';
 
-[ fN ] = dir([ p2dat, '*_spk2LFPCouplingHitsANDmisses_ppc_Sorting_alpha0.05_nRand400_stratModeOn_lowFreq.mat' ]);
+[ fN ] = dir([ p2dat, '*_spk2LFPCouplingHitsANDmisses_plv_Sorting_alpha0.05_nRand400_stratModeOn_lowFreq.mat' ]);
 
 plvH = [];
 plvM = [];
@@ -63,14 +63,14 @@ for curFile = 1:length( fN )
     tmpDat = load([ p2dat, fN(curFile).name ]);
     
     for curChan = 1:size(tmpDat.spk2LFPCouplingH,1 )
-        if all(~isnan(tmpDat.spk2LFPCouplingH(curChan,:)))
-            if ~(all(diff(tmpDat.spk2LFPCouplingH(curChan,:))==0)) && ~(all(diff(tmpDat.spk2LFPCouplingM(curChan,:))==0))
-                chanCnt = chanCnt +1;
-                plvH(chanCnt,:) = tmpDat.spk2LFPCouplingH(curChan,:);
-                plvM(chanCnt,:) = tmpDat.spk2LFPCouplingM(curChan,:);
-            else
-                fprintf('TOTO');
-            end;
+        if
+        if ~(all(diff(tmpDat.spk2LFPCouplingH(curChan,:))==0)) && ~(all(diff(tmpDat.spk2LFPCouplingM(curChan,:))==0))
+            chanCnt = chanCnt +1;
+            plvH(chanCnt,:) = tmpDat.spk2LFPCouplingH(curChan,:);
+            plvM(chanCnt,:) = tmpDat.spk2LFPCouplingM(curChan,:);
+        else
+            fprintf('TOTO');
+        end;
         end;
     end;
     
@@ -80,7 +80,7 @@ end;
 ix = find( tmpDat.spk2LFPfreqAx >= 0 & tmpDat.spk2LFPfreqAx<=30);
 subplot(223);
 hold on;
-plot(tmpDat.spk2LFPfreqAx(ix), nanmean(plvH,1),'b', 'LineWidth', 3);
+plot(tmpDat.spk2LFPfreqAx(ix), nanmean(plvH,1), 'LineWidth', 3);
 plot( tmpDat.spk2LFPfreqAx(ix), nanmean(plvM,1),'r', 'LineWidth',3);
 ylabel('PLV [a.u.]');
 xlabel('Frequency [Hz]');
