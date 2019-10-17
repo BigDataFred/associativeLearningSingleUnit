@@ -70,8 +70,12 @@ for curPat = 1:length( pID )
         end;
     end;
 end;
-poolPow1(cntChan+1:size(poolPow1,1),:,:) = [];
-poolPow2(cntChan+1:size(poolPow2,1),:,:) = [];
+
+%%
+poolPowLF(cntChan+1:size(poolPowLF,1),:,:) = [];
+poolPowHF(cntChan+1:size(poolPowHF,1),:,:) = [];
+poolPowLFn(cntChan+1:size(poolPowLF,1),:,:) = [];
+poolPowHFn(cntChan+1:size(poolPowHF,1),:,:) = [];
 
 %%
 figure;
@@ -103,13 +107,13 @@ plot(tfrDat2.fx,squeeze(mean(mean(poolPowHF(mF >=2 & mF <=25,:,:),2),1)),'r','Li
 
 %%
 figure;
-imagesc( tfrDat1.tx-7, tfrDat1.fx, squeeze( mean( poolPowLFn(mF >=2 & mF <=25,:,:),1 ) )' );
+imagesc( tfrDat1.tx-7, tfrDat1.fx, squeeze( mean( poolPowLF(mF >=2 & mF <=25,:,:),1 ) )' );
 axis xy;
 xlim([-.5 5]);
 colormap jet;
 
 figure;
-imagesc( tfrDat2.tx-7, tfrDat2.fx, squeeze( mean( poolPowHFn(mF >=2 & mF <=25,:,:),1 ) )' );
+imagesc( tfrDat2.tx-7, tfrDat2.fx, squeeze( mean( poolPowHF(mF >=2 & mF <=25,:,:),1 ) )' );
 axis xy;
 xlim([-.5 5]);
 colormap jet;
