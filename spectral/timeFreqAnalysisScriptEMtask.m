@@ -93,8 +93,10 @@ for curPat = 1:length(pId) % loop over patients
                     [ SxxHF ]    = cell(1,length( selIx ));% high-freq pow of sngle trials
                     [ SxxeHF ]   = cell(1,length( selIx ));% high-freq pow of ERP    
                     [ itc ]     = cell(1,length( selIx ));% inter-trial coh
-                    [ itcH ]     = cell(1,length( selIx ));% inter-trial coh
-                    [ itcM ]     = cell(1,length( selIx ));% inter-trial coh
+                    [ itcHvsM ]     = cell(1,length( selIx ));% inter-trial coh
+                    
+%                     [ itcH ]     = cell(1,length( selIx ));% inter-trial coh
+%                     [ itcM ]     = cell(1,length( selIx ));% inter-trial coh
                     
                     %%
                     parfor curChan = 1:length( lfp )
@@ -108,31 +110,35 @@ for curPat = 1:length(pId) % loop over patients
                     end;
                     [~,tx,fx] = mtspecgramc(ones(size(lfp{1},1),1),movingwinLF, paramsLF);
                     
-                    %% split single trial power data into hits and misses and save data to disc separately
-                    % low freq hits
+                    %% split single trial power data into hits and misses and save data to disc separately                    
                     SxxLFH = cell(1,length(SxxLF));
-                    for curChan = 1:length(SxxLF)
-                        trlENC2 = 1:length(trlENC);
-                        trlENC2(delIx{curChan}) = [];
-                        if (~isempty(SxxLF{curChan})) && (any(ismember(trlENC2,hitIdx)))
-                            SxxLFH{curChan} = squeeze(mean(SxxLF{curChan}(:,:,ismember(trlENC2,hitIdx)),3));
-                        end;
-                    end;
-                    
-                    saveName =[pId{curPat},'_',expMode{curExp},'_',sesh{curSesh},'_spectrogramTrialSeg_lowFreqHits.mat'];
-                    save([savePath,saveName],'SxxLFH','tx','fx','chanLabLFP','-v7.3');
-                    clear SxxLFH;
-                    
-                    % low freq misses
                     SxxLFM = cell(1,length(SxxLF));
                     for curChan = 1:length(SxxLF)
                         trlENC2 = 1:length(trlENC);
                         trlENC2(delIx{curChan}) = [];
-                        if (~isempty(SxxLF{curChan})) && (any(ismember(trlENC2,missIdx)))
-                            SxxLFM{curChan} = squeeze(mean(SxxLF{curChan}(:,:,ismember(trlENC2,missIdx)),3));
+                        if (~isempty(SxxLF{curChan})) && (any(ismember(trlENC2,hitIdx)))
+                            [hIx] = find(ismember(trlENC2,hitIdx));
+                            [mIx] = find(ismember(trlENC2,missIdx));
+                            [hIx,mIx] = stratisfyCondIndexes( hIx, mIx );
+                            x = [];
+                            for curSamp = 1:size( ix1,1)
+                                [ x(curSamp,:) ] = squeeze(mean(SxxLF{curChan}(:,:,hIx(curSamp,:)),3));
+                            end;                                                                                       
+                            SxxLFH{curChan} = mean(x,1);                            
+                             x = [];
+                            for curSamp = 1:size( ix1,1)
+                                [ x(curSamp,:) ] = squeeze(mean(SxxLF{curChan}(:,:,mIx(curSamp,:)),3));
+                            end;                             
+                            SxxLFM{curChan} = mean(x,1);
                         end;
                     end;
                     
+                    % low freq hits
+                    saveName =[pId{curPat},'_',expMode{curExp},'_',sesh{curSesh},'_spectrogramTrialSeg_lowFreqHits.mat'];
+                    save([savePath,saveName],'SxxLFH','tx','fx','chanLabLFP','-v7.3');
+                    clear SxxLFH;
+                    
+                    % low freq misses                    
                     saveName =[pId{curPat},'_',expMode{curExp},'_',sesh{curSesh},'_spectrogramTrialSeg_lowFreqMisses.mat'];
                     save([savePath,saveName],'SxxLFM','tx','fx','chanLabLFP','-v7.3');
                     clear SxxLFM;
@@ -167,30 +173,34 @@ for curPat = 1:length(pId) % loop over patients
                     [~,tx,fx] = mtspecgramc(ones(size(lfp{1},1),1),movingwinHF, paramsHF);              
                     
                     %% split single trial power data into hits and misses and save data to disc separately
-                    % high freq hits
                     SxxHFH = cell(1,length(SxxHF));
-                    for curChan = 1:length(SxxHF)
-                        trlENC2 = 1:length(trlENC);
-                        trlENC2(delIx{curChan}) = [];
-                        if (~isempty(SxxHF{curChan})) && (any(ismember(trlENC2,hitIdx)))
-                            SxxHFH{curChan} = squeeze(mean(SxxHF{curChan}(:,:,ismember(trlENC2,hitIdx)),3));
-                        end;
-                    end;
-                    
-                    saveName =[pId{curPat},'_',expMode{curExp},'_',sesh{curSesh},'_spectrogramTrialSeg_highFreqHits.mat'];
-                    save([savePath,saveName],'SxxHFH','tx','fx','chanLabLFP','-v7.3');
-                    clear SxxHFH;
-                    
-                    % high freq misses
                     SxxHFM = cell(1,length(SxxHF));
                     for curChan = 1:length(SxxHF)
                         trlENC2 = 1:length(trlENC);
                         trlENC2(delIx{curChan}) = [];
-                        if (~isempty(SxxHF{curChan})) && (any(ismember(trlENC2,missIdx)))
-                            SxxHFM{curChan} = squeeze(mean(SxxHF{curChan}(:,:,ismember(trlENC2,missIdx)),3));
+                        if (~isempty(SxxHF{curChan})) && (any(ismember(trlENC2,hitIdx)))
+                            [hIx] = find(ismember(trlENC2,hitIdx));
+                            [mIx] = find(ismember(trlENC2,missIdx));
+                            [hIx,mIx] = stratisfyCondIndexes( hIx, mIx );
+                            x = [];
+                            for curSamp = 1:size( ix1,1)
+                                [ x(curSamp,:) ] = squeeze(mean(SxxHF{curChan}(:,:,hIx(curSamp,:)),3));
+                            end;                                                                                       
+                            SxxHFH{curChan} = mean(x,1);                            
+                             x = [];
+                            for curSamp = 1:size( ix1,1)
+                                [ x(curSamp,:) ] = squeeze(mean(SxxHF{curChan}(:,:,mIx(curSamp,:)),3));
+                            end;                             
+                            SxxHFM{curChan} = mean(x,1);
                         end;
                     end;
                     
+                    % high freq hits                    
+                    saveName =[pId{curPat},'_',expMode{curExp},'_',sesh{curSesh},'_spectrogramTrialSeg_highFreqHits.mat'];
+                    save([savePath,saveName],'SxxHFH','tx','fx','chanLabLFP','-v7.3');
+                    clear SxxHFH;
+                    
+                    % high freq misses                    
                     saveName =[pId{curPat},'_',expMode{curExp},'_',sesh{curSesh},'_spectrogramTrialSeg_highFreqMisses.mat'];
                     save([savePath,saveName],'SxxHFM','tx','fx','chanLabLFP','-v7.3');
                     clear SxxHFM;
@@ -212,8 +222,8 @@ for curPat = 1:length(pId) % loop over patients
                     %%
                     [ dsTrlTime ] = lfpDat.dsTrlTime;
                     [ Fs ]        = lfpDat.dsFs;
-                    [ pval1 ] = zeros(length( lfp ),1);
-                    [ pval2 ] = zeros(length( lfp ),1);                    
+%                     [ pval1 ] = zeros(length( lfp ),1);
+%                     [ pval2 ] = zeros(length( lfp ),1);                    
                     parfor curChan = 1:length( lfp )
                         if ~isempty(lfp{curChan})
                             % dummy structure for fieldtrip
@@ -287,20 +297,18 @@ for curPat = 1:length(pId) % loop over patients
                             [hIx,mIx] = stratisfyCondIndexes( hIx, mIx );
                                                                                     
                             x = [];
-                            for curSamp = 1:size( ix1,1)
-                                [ x(curSamp,:) ] = squeeze(1/size(tmp(hIx(curSamp,:),fIx,tIx),1)*abs(nansum(tmp(hIx,fIx,tIx),1)));
+                            for curSamp = 1:size( hIx,1)
+                                [ x(curSamp,:) ] = squeeze(1/size(tmp(hIx(curSamp,:),fIx,tIx),1)*abs(nansum(tmp(hIx(curSamp,:),fIx,tIx),1)));
                             end;
                             [ itch ] = mean(x,1);
                             
                             x = [];
-                            for curSamp = 1:size( ix2,1)
-                                [ x(curSamp,:) ] = squeeze(1/size(tmp(mIx(curSamp,:),fIx,tIx),1)*abs(nansum(tmp(hIx,fIx,tIx),1)));
+                            for curSamp = 1:size( mIx,1)
+                                [ x(curSamp,:) ] = squeeze(1/size(tmp(mIx(curSamp,:),fIx,tIx),1)*abs(nansum(tmp(mIx(curSamp,:),fIx,tIx),1)));
                             end;
                             [ itcm ] = mean(x,1);
                             
-                            itch = squeeze(1/size(tmp(hIx,fIx,tIx),1)*abs(nansum(tmp(hIx,fIx,tIx),1)));
-                            itcm = squeeze(1/size(tmp(mIx,fIx,tIx),1)*abs(nansum(tmp(mIx,fIx,tIx),1)));
-                            dItcE = itch-itcm;
+%                             dItcE = itch-itcm;
                             
 %                             dItcE = max(abs(dItcE(:)));                            
 %                             pval1(curChan) = length(find(dItcR>=dItcE))/length(dItcR);
@@ -310,6 +318,7 @@ for curPat = 1:length(pId) % loop over patients
 %                             pval2(curChan) = length(find(ItcR>=ItcE))/length(ItcR);
                             
                             [ itc{curChan} ] = squeeze(1/size(tmp,1)*abs(nansum(tmp,1)));
+                            [ itcHvsM{curChan} ] = itch-itcm;
 %                             [ itcH{curChan} ] = squeeze(1/size(tmp(hIx,:,:),1)*abs(nansum(tmp(hIx,:,:),1)));
 %                             [ itcM{curChan} ] = squeeze(1/size(tmp(mIx,:,:),1)*abs(nansum(tmp(mIx,:,:),1)));
                         end;
@@ -333,7 +342,7 @@ for curPat = 1:length(pId) % loop over patients
                     clear lfp;
                     
                     saveName =[pId{curPat},'_',expMode{curExp},'_',sesh{curSesh},'_spectrogramTrialSegITC_lowFreq.mat'];
-                    save([savePath,saveName],'itc','itcH','itcM','itcTime','itcFreq','chanLabLFP','pval1','pval2');
+                    save([savePath,saveName],'itc','itcHvsM','itcTime','itcFreq','chanLabLFP');%'itcH','itcM','pval1','pval2'
                     clear itc phi;
                     
 %                     tmp = cell(1,length(phi));
