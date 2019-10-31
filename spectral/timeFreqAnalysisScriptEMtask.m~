@@ -288,15 +288,15 @@ for curPat = 1:length(pId) % loop over patients
                                                                                     
                             x = [];
                             for curSamp = 1:size( ix1,1)
-                                [ x(curSamp,:) ] = squeeze(1/size(tmp(hIx(curSamp,:),fIx,tIx),1)*abs(nansum(tmp(hIx,fIx,tIx),1)));
+                                [ x(curSamp,:) ] = squeeze(1/size(tmp(hIx,fIx,tIx),1)*abs(nansum(tmp(hIx,fIx,tIx),1)));
                             end;
-                            [ itch ] = mean(x,1);
+                            [ spk2LFPCouplingH(curMW,:) ] = mean(x,1);
                             
                             x = [];
                             for curSamp = 1:size( ix2,1)
-                                [ x(curSamp,:) ] = squeeze(1/size(tmp(mIx(curSamp,:),fIx,tIx),1)*abs(nansum(tmp(hIx,fIx,tIx),1)));
+                                [ x(curSamp,:) ] = computeSPK2LFPcoupling( tmp(mIx,:,:), ix2(curSamp,:), spk2LFPmode{curSpk2LFPmode} );
                             end;
-                            [ itcm ] = mean(x,1);
+                            [ spk2LFPCouplingM(curMW,:) ] = mean(x,1);
                             
                             itch = squeeze(1/size(tmp(hIx,fIx,tIx),1)*abs(nansum(tmp(hIx,fIx,tIx),1)));
                             itcm = squeeze(1/size(tmp(mIx,fIx,tIx),1)*abs(nansum(tmp(mIx,fIx,tIx),1)));
