@@ -1,4 +1,4 @@
-function spk2lfCoupling4HitsANDmisses_shuf_ppc( pId, expMode, timewindows,spk2LFPmode, rdsPath, savePath, Notch,Nrand,locdist)
+function spk2lfCoupling4HitsANDmisses_sigSFC_shuf( pId, expMode, timewindows,spk2LFPmode, rdsPath, savePath, Notch,Nrand,locdist)
 
 %%
 addpath(genpath('~/tbx/chronux_2_11/spectral_analysis/'));
@@ -49,7 +49,7 @@ for curPat = 1:length( pId )
                             [ lfp, ~, delIx, ~, ~, chanLabLFP ] = preprocLFP( lfpDat, trlPool, trlENC, Notch );% preprocess LFP
 
                             %% extract phase from LFP
-                            [ phi, phiTime, phiFreq ] = computeLFPphase( lfp, lfpDat.dsFs, [min(lfpDat.dsTrlTime) max(lfpDat.dsTrlTime)],'LF');
+                            [ phi, phiTime, phiFreq ] = computeLFPphase( lfp, lfpDat.dsFs, [min(lfpDat.dsTrlTime) max(lfpDat.dsTrlTime)],'HF');
                             clear lfp;
                             counter=counter+1;
                             %% Get time periods of interest    
@@ -57,7 +57,7 @@ for curPat = 1:length( pId )
                                 tmptw=timewindows(tw,:);    
                                 ptIx = find( phiTime >=tmptw(1) & phiTime < tmptw(2) );
                                 stIx = find( spkDat.dt2(2:end-1) >=tmptw(1)*1000 & spkDat.dt2(2:end-1) < (tmptw(2)*1000));
-                                fIx = [find( phiFreq >=2) & find(phiFreq <=40)];
+                                fIx = [find( phiFreq >=40) & find(phiFreq <=80)];
                                 spk2LFPfreqAx = phiFreq(fIx);
                             
                                 %% compute spk2LFP coupling for Hits & Misses
@@ -142,7 +142,7 @@ for curPat = 1:length( pId )
                                     %% save results to disk
                                     timebit=[num2str(tmptw(1)), 'to', num2str(tmptw(2)), 'Secs'];
                                     saveName =[ pId{curPat},'_',expMode{curExp},'_',sesh{curSesh},'_spk2LFPCouplingHitsANDmisses_',...
-                                        spk2LFPmode{curSpk2LFPmode},'_Sorting_2to40Hz_FDRfs_',timebit,'_shuff_dist.mat' ];
+                                        spk2LFPmode{curSpk2LFPmode},'_Sorting_40to80Hz_FDRfs_',timebit,'_shuff_dist.mat' ];
                                     save([savePath,saveName],'spk2LFPfreqAx','spk2LFPshuf');
                                     clear spk2LFPshuf paircnt spaircnt;
                                 end
